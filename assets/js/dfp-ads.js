@@ -11,11 +11,9 @@
  * @type {Array}
  */
 var browser_sizes = [
-  ['970,250', '990,250'],
-  ['300,250', '320,400'], 
-  ['990,250', '970,250'],
-  ['728,90', '740,250'],
-  ['300,250', '320,400']
+  ['990,250','970,250'],
+  ['740,250','728,90'],
+  ['320,400','300,250']
 ];
 
 
@@ -26,6 +24,15 @@ googletag.cmd.push(function () {
   // Object from Ajax
   var dfp_ad_data = dfp_ad_object[0],
     acct_id = dfp_ad_data.account_id;
+
+    for( var position in dfp_ad_data['positions']) {
+      var target = dfp_ad_data['positions'][position]['position_tag'];
+      if(target != null) {
+        if(document.getElementById(target) == null) {
+          dfp_ad_data['positions'].splice(position, 1);
+        }
+      }
+    } 
 
   /**
    * Loads Ad Position
@@ -47,16 +54,17 @@ googletag.cmd.push(function () {
    * @param {Object} position - Array of ad positions
    */
   function define_ad_slot(position) {
-    googleAdUnit = googletag.defineSlot(
+
+    googleAdUnit = googletag.defineSlot( 
       acct_id + position.ad_name,
       position.sizes,
       position.position_tag
-    ).addService(googletag.pubads());
+    ).setCollapseEmptyDiv(true,true).addService(googletag.pubads());
     if (position.out_of_page === true) {
       googleAdUnit = googletag.defineOutOfPageSlot(
         acct_id + position.ad_name,
         position.position_tag + '-oop'
-      ).addService(googletag.pubads());
+      ).setCollapseEmptyDiv(true,true).addService(googletag.pubads());
     }
   }
 
@@ -81,8 +89,8 @@ googletag.cmd.push(function () {
 
     for(var size in positions['sizes']) {
       for (var browser in browser_sizes) {
-          if((positions['sizes'][size][0] != 'undefined') && (browser_sizes[browser][0] == positions['sizes'][size][0] + ',' + positions['sizes'][size][1])) {
-            map.addSize(browser_sizes[browser][0].split(',').map(Number),browser_sizes[browser][1].split(',').map(Number));
+          if((positions['sizes'][size][0] != 'undefined') && (browser_sizes[browser][1] == positions['sizes'][size][0] + ',' + positions['sizes'][size][1])) {
+            map.addSize(browser_sizes[browser][0].split(',').map(Number), positions['sizes'][size]);
           }
       }
     }
