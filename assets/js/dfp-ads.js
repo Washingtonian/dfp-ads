@@ -27,6 +27,7 @@ googletag.cmd.push(function () {
 
   for( var position in dfp_ad_data['positions']) {
     var target = dfp_ad_data['positions'][position]['position_tag'];
+    console.log(target);
     if(target != null) {
       if(document.getElementById(target) == null) {
         dfp_ad_data['positions'].splice(position, 1);
