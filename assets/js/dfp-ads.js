@@ -16,11 +16,11 @@ var browser_sizes = [
     ['320,400', '300,250']
 ];
 
-    var includes = ['pets'],
+var includes = ['pets'],
     processGoogle = false;
 
 for (var i = 0, j = includes.length; i < j; i++) {
-    if (hasClass(document.body, includes[i])) {
+    if (bodyHasClass(includes[i])) {
         processGoogle = true;
     }
 }
@@ -127,10 +127,9 @@ if (processGoogle == true) {
 /**
  * Search for a class name
  *
- * @param element
  * @param cls
  * @returns {boolean}
  */
-function hasClass(element, cls) {
-    return (' ' + element.className + ' ').indexOf(' ' + cls + ' ') > -1;
+function bodyHasClass(cls) {
+    return (' ' + document.body.className + ' ').indexOf(' ' + cls + ' ') > -1;
 }
