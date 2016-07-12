@@ -43,7 +43,6 @@ googletag.cmd.push(function () {
     var ad_pos, len;
     // Run through positions
     for (ad_pos = 0, len = positions.length; ad_pos < len; ++ad_pos) {
-
       define_ad_slot(positions[ad_pos]);
       set_size_mappings(positions[ad_pos])
     }
@@ -55,18 +54,18 @@ googletag.cmd.push(function () {
    * @param {Object} position - Array of ad positions
    */
   function define_ad_slot(position) {
-    console.debug(position);
+
     googleAdUnit = googletag.defineSlot(
         acct_id + position.ad_name,
         position.sizes,
         position.position_tag
     ).setCollapseEmptyDiv(true,true).addService(googletag.pubads());
-    // if (position.out_of_page === true) {
-    //   googleAdUnit = googletag.defineOutOfPageSlot(
-    //       acct_id + position.ad_name,
-    //       position.position_tag + '-oop'
-    //   ).setCollapseEmptyDiv(true,true).addService(googletag.pubads());
-    // }
+   /* if (position.out_of_page === true) {
+      googleAdUnit = googletag.defineOutOfPageSlot(
+          acct_id + position.ad_name,
+          position.position_tag + '-oop'
+      ).setCollapseEmptyDiv(true,true).addService(googletag.pubads());
+    }*/
   }
 
   /**
@@ -76,7 +75,6 @@ googletag.cmd.push(function () {
   function set_targeting(targeting) {
     for (var target in targeting) {
       var key = target.toLowerCase();
-
       googleAdUnit.setTargeting(key, targeting[target]);
     }
   }
@@ -86,6 +84,7 @@ googletag.cmd.push(function () {
    * @param {[type]} sizes [description]
    */
   function set_size_mappings(positions) {
+    var i = 0;
     var map = googletag.sizeMapping();
 
     for(var size in positions['sizes']) {
