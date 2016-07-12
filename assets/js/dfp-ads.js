@@ -16,12 +16,11 @@ var browser_sizes = [
     ['320,400', '300,250']
 ];
 
-var body = document.body,
-    includes = ['pets'],
+    var includes = ['pets'],
     processGoogle = false;
 
 for (var i = 0, j = includes.length; i < j; i++) {
-    if (hasClass(body, includes[i])) {
+    if (hasClass(document.body, includes[i])) {
         processGoogle = true;
     }
 }
