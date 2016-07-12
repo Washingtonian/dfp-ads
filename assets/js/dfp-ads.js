@@ -21,7 +21,7 @@ var body = document.body,
     processGoogle = false;
 
 for (var i = 0, j = classes.length; i < j; i++) {
-    if (hasClass(body, classes[i])) {
+    if (hasClass(body, includes[i])) {
         processGoogle = true;
     }
 }
