@@ -121,4 +121,6 @@ if (processGoogle == true) {
         // Go
         googletag.enableServices();
     });
+} else {
+    console.log('no classes found for google');
 }
