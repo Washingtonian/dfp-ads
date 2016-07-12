@@ -46,4 +46,4 @@ cache
 
 # Ignore WordPress repo
 /repo/
-
+/build/docs 
