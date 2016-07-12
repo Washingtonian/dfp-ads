@@ -20,14 +20,14 @@ var body = document.body,
     includes = ['pets'],
     processGoogle = false;
 
-for (var i = 0, j = classes.length; i < j; i++) {
+for (var i = 0, j = includes.length; i < j; i++) {
     if (hasClass(body, includes[i])) {
         processGoogle = true;
     }
 }
 
 if (processGoogle == true) {
-    console.log(classes[i]);
+    console.log(includes[i]);
     googletag.cmd.push(function () {
 
         var googleAdUnit;
