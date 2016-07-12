@@ -124,3 +124,14 @@ if (processGoogle == true) {
 } else {
     console.log('no classes found for google');
 }
+
+/**
+ * Search for a class name
+ *
+ * @param element
+ * @param cls
+ * @returns {boolean}
+ */
+function hasClass(element, cls) {
+    return (' ' + element.className + ' ').indexOf(' ' + cls + ' ') > -1;
+}
