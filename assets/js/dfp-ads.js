@@ -30,7 +30,7 @@ googletag.cmd.push(function () {
         }
     }
 console.debug(dfp_ad_data);
-    /**
+    /** 
      * Loads Ad Position
      *
      * @param {Array} positions - Array of ad positions
