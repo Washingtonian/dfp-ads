@@ -90,7 +90,7 @@ googletag.cmd.push(function () {
     function set_targeting(targeting) {
         for (var target in targeting) {
             var key = target.toLowerCase();
-            googleAdUnit.setTargeting(key, targeting[target]);
+            googletag.pubads().setTargeting(key, targeting[target]);
         }
     }
 
