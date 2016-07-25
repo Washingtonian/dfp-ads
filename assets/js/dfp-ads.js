@@ -8,13 +8,28 @@
  * @type {Array}
  */
 var browser_sizes = [
-    ['990,250', '970,250'],
+    ['200,100', '180,90'],
+    ['200,180', '180,150'],
+    ['220,220', '200,200'],
+    ['300,200', '245,155'],
+    ['320,50', '300,100'],
+    ['320,400', '300,250'],
+    ['320,100', '320,50'],
+    ['320,150', '320,100'],
+    ['340,400', '336,280'],
+    ['320,800', '300,600'],
+    ['400,700', '160,600'],
+    ['500,200', '468,60'],
+    ['500,600', '240,400'],
     ['740,250', '728,90'],
-    ['320,400', '300,250']
+    ['990,250', '970,90'],
+    ['990,250', '970,250']
 ];
+
 
 googletag.cmd.push(function () {
 
+    var resizeTimer;
     var googleAdUnit;
 
     // Object from Ajax
@@ -22,15 +37,17 @@ googletag.cmd.push(function () {
         acct_id = dfp_ad_data.account_id;
 
     for (var position in dfp_ad_data['positions']) {
+
         var target = dfp_ad_data['positions'][position]['position_tag'];
-        if (target != null) {
-            if (document.getElementById(target) == null) {
-                dfp_ad_data['positions'].splice(position, 1);
+
+        if (target != null || target != undefined) {
+            if (document.getElementById(target) === null) {
+                dfp_ad_data['positions'][position] = null;
             }
         }
     }
-console.debug(dfp_ad_data);
-    /** 
+
+    /**
      * Loads Ad Position
      *
      * @param {Array} positions - Array of ad positions
@@ -39,8 +56,10 @@ console.debug(dfp_ad_data);
         var ad_pos, len;
         // Run through positions
         for (ad_pos = 0, len = positions.length; ad_pos < len; ++ad_pos) {
-            define_ad_slot(positions[ad_pos]);
-            set_size_mappings(positions[ad_pos])
+            if(positions[ad_pos] != null) {
+                define_ad_slot(positions[ad_pos]);
+                set_size_mappings(positions[ad_pos]);
+            }
         }
     }
 
@@ -50,18 +69,18 @@ console.debug(dfp_ad_data);
      * @param {Object} position - Array of ad positions
      */
     function define_ad_slot(position) {
-
         googleAdUnit = googletag.defineSlot(
             acct_id + position.ad_name,
             position.sizes,
             position.position_tag
         ).setCollapseEmptyDiv(true, true).addService(googletag.pubads());
-        /* if (position.out_of_page === true) {
-         googleAdUnit = googletag.defineOutOfPageSlot(
-         acct_id + position.ad_name,
-         position.position_tag + '-oop'
-         ).setCollapseEmptyDiv(true,true).addService(googletag.pubads());
-         }*/
+        // console.log(position.out_of_page);
+        // if (position.out_of_page === true) {
+        //     googleAdUnit = googletag.defineOutOfPageSlot(
+        //         acct_id + position.ad_name,
+        //         position.position_tag + '-oop'
+        //     ).setCollapseEmptyDiv(true, true).addService(googletag.pubads());
+        // }
     }
 
     /**
@@ -79,26 +98,59 @@ console.debug(dfp_ad_data);
      * Set Size Mappings
      * @param {[type]} sizes [description]
      */
-    function set_size_mappings(positions) {
+    function set_size_mappings(position) {
+
         var i = 0;
         var map = googletag.sizeMapping();
 
-        for (var size in positions['sizes']) {
+        if (!Array.isArray(position['sizes'][0])) {
             for (var browser in browser_sizes) {
-                if ((positions['sizes'][size][0] != 'undefined') && (browser_sizes[browser][1] == positions['sizes'][size][0] + ',' + positions['sizes'][size][1])) {
-                    map.addSize(browser_sizes[browser][0].split(',').map(Number), positions['sizes'][size]);
+                if ((position['sizes'][0] != 'undefined') && (browser_sizes[browser][1] == position['sizes'][0] + ',' + position['sizes'][1])) {
+                    map.addSize(browser_sizes[browser][0].split(',').map(Number), [position['sizes'][0] , position['sizes'][1]]);
+                }
+            }
+        } else {
+            for (var size in position['sizes']) {
+                for (var browser in browser_sizes) {
+                    if ((position['sizes'][size][0] != 'undefined') && (browser_sizes[browser][1] == position['sizes'][size][0] + ',' + position['sizes'][size][1])) {
+                        map.addSize(browser_sizes[browser][0].split(',').map(Number), position['sizes'][size]);
+                    }
                 }
             }
         }
+
+        map.addSize([0, 0], []);
+
         googleAdUnit.defineSizeMapping(map.build());
+    }
+
+    /**
+     * [description]
+     * @param  {[type]} ) {                    clearTimeout(resizeTimer);         resizeTimer [description]
+     * @return {[type]}   [description]
+     */
+    window.addEventListener("resize", function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(resizer, 500);
+    });
+
+    /**
+     * [resizer description]
+     * @return {[type]} [description]
+     */
+    function resizer() {
+        googletag.pubads().refresh();
     }
 
     // Generates Ad Slots
     load_ad_positions(dfp_ad_data.positions);
+
     // Collapse Empty Divs
     googletag.pubads().collapseEmptyDivs(true);
+
     // Targeting
     set_targeting(dfp_ad_data.page_targeting);
+
     // Asynchronous Loading
     if (dfp_ad_data.asynch === true) {
         googletag.pubads().enableAsyncRendering();
