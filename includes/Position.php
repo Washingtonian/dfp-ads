@@ -12,7 +12,8 @@
  */
 namespace DFP_Ads;
 
-class Position {
+class Position
+{
 
 	/**
 	 * ID of the CPT
@@ -65,7 +66,7 @@ class Position {
 	 *
 	 * @var array
 	 */
-	public $sizes = array();
+	public $sizes = [];
 
 	/**
 	 * Defines whether the slot should include Out of Page position
@@ -87,7 +88,7 @@ class Position {
 	 *
 	 * @var array
 	 */
-	public $targeting = array();
+	public $targeting = [];
 
 	/**
 	 * The class to add to the ad position.
@@ -98,6 +99,7 @@ class Position {
 	 * @var string
 	 */
 	private $position_class = 'dfp_ad_pos';
+
 
 	/**
 	 * PHP5 Constructor
@@ -110,27 +112,23 @@ class Position {
 	 *
 	 * @param $id int|null Post ID to grab the post object and create the position
 	 */
-	public function __construct( $id = null ) {
+	public function __construct($id = null)
+	{
 
 		/**
 		 * @param $position WP_Post
 		 */
-		if (
-			(
-				$id !== null &&
-				$position = get_post( $id )
-			) &&
-			$position->post_type === 'dfp_ads'
-		) {
-			$meta               = get_post_meta( $position->ID );
+		if (($id !== null && $position = get_post($id)) && $position->post_type === 'dfp_ads') {
+			$meta               = get_post_meta($position->ID);
 			$this->post_id      = $id;
 			$this->title        = $position->post_title;
 			$this->ad_name      = $meta['dfp_ad_code'][0];
-			$this->position_tag = strtolower( 'Ad_Pos_' . $this->ad_name );
-			$this->sizes        = dfp_get_ad_sizes( $meta['dfp_position_sizes'][0] );
-			$this->out_of_page  = ( isset( $meta['dfp_out_of_page'][0] ) ? true : false );
+			$this->position_tag = strtolower('Ad_Pos_' . $this->ad_name . '_' . rand(1, 10000000));
+			$this->sizes        = dfp_get_ad_sizes($meta['dfp_position_sizes'][0]);
+			$this->out_of_page  = (isset($meta['dfp_out_of_page'][0]) ? true : false);
 		}
 	}
+
 
 	/**
 	 * Echo out the ad position
@@ -143,9 +141,11 @@ class Position {
 	 *
 	 * @return void
 	 */
-	public function display_position() {
+	public function display_position()
+	{
 		echo $this->get_position();
 	}
+
 
 	/**
 	 * Generates HTML to display position
@@ -158,7 +158,8 @@ class Position {
 	 *
 	 * @return string HTML string that contains ad position
 	 */
-	public function get_position() {
+	public function get_position()
+	{
 		ob_start();
 		$this->create_position();
 		$position_html = ob_get_contents();
@@ -166,6 +167,7 @@ class Position {
 
 		return $position_html;
 	}
+
 
 	/**
 	 * The Ad Position.
@@ -179,14 +181,15 @@ class Position {
 	 *
 	 * @return mixed
 	 */
-	private function create_position() {
-		printf( __( '<!-- %1s -->', 'dfp-ads' ), $this->ad_name );
+	private function create_position()
+	{
+		printf(__('<!-- %1s -->', 'dfp-ads'), $this->ad_name);
 		?>
-		<div id="<?php _e( $this->position_tag, 'dfp-ads' ); ?>"
-		     class="<?php _e( $this->position_tag, 'dfp-ads' ); ?> <?php _e( $this->ad_name, 'dfp-ads' ); ?> <?php _e( $this->position_class, 'dfp-ads' ); ?>">
+		<div id="<?php _e($this->position_tag, 'dfp-ads'); ?>"
+			 class="<?php _e($this->position_tag, 'dfp-ads'); ?> <?php _e($this->ad_name, 'dfp-ads'); ?> <?php _e($this->position_class, 'dfp-ads'); ?>">
 			<script type='text/javascript'>
 				googletag.cmd.push(function () {
-					googletag.display('<?php _e( $this->position_tag, 'dfp-ads'); ?>');
+					googletag.display('<?php _e($this->position_tag, 'dfp-ads'); ?>');
 				});
 			</script>
 		</div>
