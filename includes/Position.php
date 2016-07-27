@@ -123,7 +123,7 @@ class Position
 			$this->post_id      = $id;
 			$this->title        = $position->post_title;
 			$this->ad_name      = $meta['dfp_ad_code'][0];
-			$this->position_tag = strtolower('Ad_Pos_' . $this->ad_name.'_');
+			$this->position_tag = strtolower('Ad_Pos_' . $this->ad_name);
 			$this->sizes        = dfp_get_ad_sizes($meta['dfp_position_sizes'][0]);
 			$this->out_of_page  = (isset($meta['dfp_out_of_page'][0]) ? true : false);
 		}
@@ -183,13 +183,15 @@ class Position
 	 */
 	private function create_position()
 	{
-		printf(__('<!-- %1s -->', 'dfp-ads'), $this->ad_name);
+		$rand = rand();
+		printf(__('<!-- %1s -->', 'dfp-ads'), $this->ad_name,'_'.$rand);
+
 		?>
-		<div id="<?php _e($this->position_tag, 'dfp-ads'); ?>"
+		<div id="<?php _e($this->position_tag.'_'.$rand, 'dfp-ads'); ?>"
 			 class="<?php _e($this->position_tag, 'dfp-ads'); ?> <?php _e($this->ad_name, 'dfp-ads'); ?> <?php _e($this->position_class, 'dfp-ads'); ?>">
 			<script type='text/javascript'>
 				googletag.cmd.push(function () {
-					googletag.display('<?php _e($this->position_tag, 'dfp-ads'); ?>');
+					googletag.display('<?php _e($this->position_tag.'_'.$rand, 'dfp-ads'); ?>');
 				});
 			</script>
 		</div>
