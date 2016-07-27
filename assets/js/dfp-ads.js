@@ -155,6 +155,9 @@ googletag.cmd.push(function () {
     if (dfp_ad_data.asynch === true) {
         googletag.pubads().enableAsyncRendering();
     }
+    // Enable Single Request
+    googletag.enableSingleRequest();
+    
     // Go
     googletag.enableServices();
 });
