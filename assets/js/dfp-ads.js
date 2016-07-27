@@ -156,8 +156,8 @@ googletag.cmd.push(function () {
         googletag.pubads().enableAsyncRendering();
     }
     // Enable Single Request
-    googletag.enableSingleRequest();
-    
+    googletag.pubads().enableSingleRequest();
+
     // Go
     googletag.enableServices();
 });
