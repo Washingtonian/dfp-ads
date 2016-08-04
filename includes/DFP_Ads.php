@@ -10,7 +10,8 @@
  */
 namespace DFP_Ads;
 
-Class DFP_Ads {
+Class DFP_Ads
+{
 
 	/**
 	 * Loads Google Ads JS to header
@@ -79,11 +80,12 @@ Class DFP_Ads {
 	 *
 	 * @var array
 	 */
-	public $page_targeting = array(
-		'Page'     => array(),
-		'Category' => array(),
-		'Tag'      => array(),
-	);
+	public $page_targeting = [
+		'Page'     => [],
+		'Category' => [],
+		'Tag'      => [],
+	];
+
 
 	/**
 	 * PHP5 Constructor
@@ -91,10 +93,12 @@ Class DFP_Ads {
 	 * @since  0.0.1
 	 * @access public
 	 */
-	public function __construct() {
+	public function __construct()
+	{
 		/** Creates DFP_Ads Shortcode */
-		add_shortcode( 'dfp_ads', array( $this, 'shortcode' ) );
+		add_shortcode('dfp_ads', [$this, 'shortcode']);
 	}
+
 
 	/**
 	 * Set DFP Property Code
@@ -108,11 +112,13 @@ Class DFP_Ads {
 	 *
 	 * @return bool|string
 	 */
-	public function set_account_id( $id ) {
+	public function set_account_id($id)
+	{
 		$this->account_id = '/' . $id . '/';
 
-		return ( isset( $this->account_id ) ? $this->account_id : false );
+		return (isset($this->account_id) ? $this->account_id : false);
 	}
+
 
 	/**
 	 * Set Asynchronous Loading
@@ -129,35 +135,21 @@ Class DFP_Ads {
 	 *
 	 * @return bool
 	 */
-	public function set_asynchronous_loading( $val ) {
-		$this->asynch = ( $val == 'on' ? false : true );
+	public function set_asynchronous_loading($val)
+	{
+		$this->asynch = ($val == 'on' ? false : true);
 
-		return ( isset( $this->asynch ) ? $this->asynch : false );
+		return (isset($this->asynch) ? $this->asynch : false);
 	}
 
-	/**
-	 * Sets all ad targeting
-	 *
-	 * @since  0.0.1
-	 * @access public
-	 *
-	 * @return mixed
-	 */
-	public function set_targeting() {
-		// Page Title
-		$this->page_targeting['Page'] = $this->get_page_targeting();
-		// Categories
-		$this->page_targeting['Category'] = $this->get_category_targeting();
-		// Tags
-		$this->page_targeting['Tag'] = $this->get_tag_targeting();
-	}
 
 	/**
 	 * @param DFP_Ads $dfp_ads
 	 *
 	 * @return DFP_Ads
 	 */
-	public function send_ads_to_js( $dfp_ads ) {
+	public function send_ads_to_js($dfp_ads)
+	{
 		// Copy the original
 		$object = clone $this;
 
@@ -168,6 +160,26 @@ Class DFP_Ads {
 
 		return $object;
 	}
+
+
+	/**
+	 * Sets all ad targeting
+	 *
+	 * @since  0.0.1
+	 * @access public
+	 *
+	 * @return mixed
+	 */
+	public function set_targeting()
+	{
+		// Page Title
+		$this->page_targeting['Page'] = $this->get_page_targeting();
+		// Categories
+		$this->page_targeting['Category'] = $this->get_category_targeting();
+		// Tags
+		$this->page_targeting['Tag'] = $this->get_tag_targeting();
+	}
+
 
 	/**
 	 * Adds URL sections to targeting
@@ -181,27 +193,29 @@ Class DFP_Ads {
 	 *
 	 * @return array|string
 	 */
-	protected function get_page_targeting() {
+	protected function get_page_targeting()
+	{
 		global $wp;
 		/*
 		 * WP Core replacement for the URL parsing being done before.
 		 */
-		if ( $wp->request != null ) {
+		if ($wp->request != null) {
 			$current_url = $wp->request;
-			$array       = explode( '/', $current_url );
+			$array       = explode('/', $current_url);
 		} else {
 			$current_url = $wp->query_string;
-			$url_parts   = explode( '=', $current_url );
-			if ( count( $url_parts ) >= 2 ) {
-				$array[ $url_parts[0] ] = $url_parts[1];
+			$url_parts   = explode('=', $current_url);
+			if (count($url_parts) >= 2) {
+				$array[$url_parts[0]] = $url_parts[1];
 			} else {
-				$array = array();
+				$array = [];
 			}
 
 		}
 
-		return ( count( $array ) < 1 ? array( 'Home' ) : $array );
+		return (count($array) < 1 ? ['Home'] : $array);
 	}
+
 
 	/**
 	 * Sets the category targeting on the object
@@ -211,19 +225,21 @@ Class DFP_Ads {
 	 *
 	 * @return array|string
 	 */
-	protected function get_category_targeting() {
+	protected function get_category_targeting()
+	{
 		global $post;
-		$targets = array();
-		if ( $post ) {
-			$categories = get_the_category( $post->ID );
-			foreach ( $categories as $c ) {
-				$cat       = get_category( $c );
+		$targets = [];
+		if ($post) {
+			$categories = get_the_category($post->ID);
+			foreach ($categories as $c) {
+				$cat       = get_category($c);
 				$targets[] = $cat->name;
 			}
 		}
 
-		return ( count( $targets ) < 1 ? '' : $targets );
+		return (count($targets) < 1 ? '' : $targets);
 	}
+
 
 	/**
 	 * Sets the tag targeting on the object
@@ -233,20 +249,22 @@ Class DFP_Ads {
 	 *
 	 * @return array|string
 	 */
-	protected function get_tag_targeting() {
+	protected function get_tag_targeting()
+	{
 		global $post;
-		$targets = array();
-		if ( $post ) {
-			$tags = get_the_tags( $post->ID );
-			if ( $tags ) {
-				foreach ( $tags as $tag ) {
+		$targets = [];
+		if ($post) {
+			$tags = get_the_tags($post->ID);
+			if ($tags) {
+				foreach ($tags as $tag) {
 					$targets[] = $tag->name;
 				}
 			}
 		}
 
-		return ( count( $targets ) < 1 ? '' : $targets );
+		return (count($targets) < 1 ? '' : $targets);
 	}
+
 
 	/**
 	 * Registers Scripts. Localizes data to interstitial_ad.js
@@ -256,8 +274,9 @@ Class DFP_Ads {
 	 *
 	 * @return mixed
 	 */
-	public function scripts_and_styles() {
-		if ( defined( 'DFP_CONCAT_SCRIPTS' ) && true === DFP_CONCAT_SCRIPTS ) {
+	public function scripts_and_styles()
+	{
+		if (defined('DFP_CONCAT_SCRIPTS') && true === DFP_CONCAT_SCRIPTS) {
 			$gads_script_url    = $this->dir_uri . '/assets/js/google-ads.min.js';
 			$dfp_ads_script_url = $this->dir_uri . '/assets/js/dfp-ads.min.js';
 		} else {
@@ -265,28 +284,17 @@ Class DFP_Ads {
 			$dfp_ads_script_url = $this->dir_uri . '/assets/js/dfp-ads.js';
 		}
 		// Google Ads JS Script
-		wp_register_script(
-			$this->google_ad_script_name,
-			$gads_script_url,
-			array( 'jquery' ),
-			false,
-			false
-		);
+		wp_register_script($this->google_ad_script_name, $gads_script_url, ['jquery'], false, false);
 		/* Get the Final Ad Positions */
-		$ad_positions = apply_filters( 'pre_dfp_ads_to_js', $this );
+		$ad_positions = apply_filters('pre_dfp_ads_to_js', $this);
 		// Send data to front end.
-		wp_localize_script( $this->google_ad_script_name, 'dfp_ad_object', array( $ad_positions ) );
-		wp_enqueue_script( $this->google_ad_script_name );
+		wp_localize_script($this->google_ad_script_name, 'dfp_ad_object', [$ad_positions]);
+		wp_enqueue_script($this->google_ad_script_name);
 		// Preps the script
-		wp_register_script(
-			$this->script_name,
-			$dfp_ads_script_url,
-			array( $this->google_ad_script_name, 'jquery' ),
-			false,
-			false
-		);
-		wp_enqueue_script( $this->script_name );
+		wp_register_script($this->script_name, $dfp_ads_script_url, [$this->google_ad_script_name, 'jquery'], false, false);
+		wp_enqueue_script($this->script_name);
 	}
+
 
 	/**
 	 * Display Shortcode
@@ -298,10 +306,13 @@ Class DFP_Ads {
 	 *
 	 * @return mixed Returns HTML data for the position
 	 */
-	public function shortcode( $atts ) {
-		$position = dfp_get_ad_position( $atts['id'] );
+	public function shortcode($atts)
+	{
+		$position = dfp_get_ad_position($atts['id']);
 
-		return $position->get_position();
+		if (is_object($position)) {
+			return $position->get_position();
+		}
 	}
 
 }
