@@ -22,10 +22,13 @@ var browser_sizes = [
     ['500,200', '468,60'],
     ['500,600', '240,400'],
     ['740,250', '728,90'],
-    ['990,250', '970,90'],
     ['990,250', '970,250']
 ];
 
+var alternate_sizes = [
+    ['300,600', [[300, 600], [300, 250]]],
+    ['970,250', [[970, 250], [728, 90], [970, 90]]]
+];
 
 googletag.cmd.push(function () {
 
@@ -56,7 +59,7 @@ googletag.cmd.push(function () {
         var ad_pos, len;
         // Run through positions
         for (ad_pos = 0, len = positions.length; ad_pos < len; ++ad_pos) {
-            if(positions[ad_pos] != null) {
+            if (positions[ad_pos] != null) {
                 define_ad_slot(positions[ad_pos]);
                 set_size_mappings(positions[ad_pos]);
             }
@@ -100,24 +103,45 @@ googletag.cmd.push(function () {
      */
     function set_size_mappings(position) {
 
-        var i = 0;
         var map = googletag.sizeMapping();
 
         if (!Array.isArray(position['sizes'][0])) {
+            var arrayPosition0 = position['sizes'][0];
+            var arrayPosition1 = position['sizes'][1];
+            checkForUndefined(arrayPosition0);
             for (var browser in browser_sizes) {
-                if ((position['sizes'][0] != 'undefined') && (browser_sizes[browser][1] == position['sizes'][0] + ',' + position['sizes'][1])) {
-                    map.addSize(browser_sizes[browser][0].split(',').map(Number), [position['sizes'][0] , position['sizes'][1]]);
+                if (browser_sizes[browser][1] == arrayPosition0 + ',' + arrayPosition1) {
+                    for (var alt_size in alternate_sizes) {
+                        checkForUndefined(alternate_sizes[alt_size]);
+                        if (alternate_sizes[alt_size][0] == arrayPosition0 + ',' + arrayPosition1) {
+                            map.addSize(browser_sizes[browser][0].split(',').map(Number), alternate_sizes[alt_size][1]);
+                        }
+                    }
+                    map.addSize(browser_sizes[browser][0].split(',').map(Number), [arrayPosition0, arrayPosition1]);
                 }
             }
         } else {
+
             for (var size in position['sizes']) {
+
+                var arrayPosition0 = position['sizes'][size][0];
+                var arrayPosition1 = position['sizes'][size][1];
+                checkForUndefined(arrayPosition0);
                 for (var browser in browser_sizes) {
-                    if ((position['sizes'][size][0] != 'undefined') && (browser_sizes[browser][1] == position['sizes'][size][0] + ',' + position['sizes'][size][1])) {
+                    checkForUndefined(browser_sizes[browser][1]);
+                    if (browser_sizes[browser][1] == arrayPosition0 + ',' + arrayPosition1) {
+                        for (var alt_size in alternate_sizes) {
+                            checkForUndefined(alternate_sizes[alt_size]);
+                            if (alternate_sizes[alt_size][0] == arrayPosition0 + ',' + arrayPosition1) {
+                                map.addSize(browser_sizes[browser][0].split(',').map(Number), alternate_sizes[alt_size][1]);
+                            }
+                        }
                         map.addSize(browser_sizes[browser][0].split(',').map(Number), position['sizes'][size]);
                     }
                 }
             }
         }
+
 
         map.addSize([0, 0], []);
 
@@ -129,10 +153,20 @@ googletag.cmd.push(function () {
      * @param  {[type]} ) {                    clearTimeout(resizeTimer);         resizeTimer [description]
      * @return {[type]}   [description]
      */
-    window.addEventListener("resize", function() {
+    window.addEventListener("resize", function () {
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(resizer, 500);
     });
+
+    /**
+     * @param variable
+     * @returns {boolean}
+     */
+    function checkForUndefined(variable) {
+        if (variable == undefined) {
+            return false;
+        }
+    }
 
     /**
      * [resizer description]
