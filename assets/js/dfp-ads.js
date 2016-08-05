@@ -30,6 +30,9 @@ var alternate_sizes = [
     ['970,250', [[970, 250], [728, 90], [970, 90]]]
 ];
 
+var windowHight = window.innerHeight;
+var windowWidth = window.innerWidth;
+
 googletag.cmd.push(function () {
 
     var resizeTimer;
@@ -148,14 +151,14 @@ googletag.cmd.push(function () {
         googleAdUnit.defineSizeMapping(map.build());
     }
 
-    /**
-     * [description]
-     * @param  {[type]} ) {                    clearTimeout(resizeTimer);         resizeTimer [description]
-     * @return {[type]}   [description]
-     */
-    window.addEventListener("resize", function () {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(resizer, 500);
+
+    window.addEventListener('resize', function () {
+        var currentWidth = window.innerWidth;
+        if (windowWidth !== currentWidth) {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(resizer, 500);
+            windowWidth = currentWidth;
+        }
     });
 
     /**
