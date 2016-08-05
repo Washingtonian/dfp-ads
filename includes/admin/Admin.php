@@ -9,7 +9,8 @@
  */
 namespace DFP_Ads;
 
-class Admin {
+class Admin
+{
 
 	/**
 	 * Title of the menu page
@@ -79,7 +80,7 @@ class Admin {
 	 *
 	 * @var array
 	 */
-	public $sections = array();
+	public $sections = [];
 
 	/**
 	 * Stores the Form creation object. Form creation functions run through here.
@@ -99,17 +100,7 @@ class Admin {
 	 *
 	 * @var array
 	 */
-	public $fields = array();
-
-	/**
-	 * Created by page registration
-	 *
-	 * @since  0.0.1
-	 * @access public
-	 *
-	 * @var string $hook_suffix
-	 */
-	private $hook_suffix = '';
+	public $fields = [];
 
 	/**
 	 * Tells the settings page which menu item to queue on
@@ -132,6 +123,17 @@ class Admin {
 	public $values;
 
 	/**
+	 * Created by page registration
+	 *
+	 * @since  0.0.1
+	 * @access public
+	 *
+	 * @var string $hook_suffix
+	 */
+	private $hook_suffix = '';
+
+
+	/**
 	 * PHP5 Constructor
 	 *
 	 * @since  0.0.1
@@ -139,9 +141,11 @@ class Admin {
 	 *
 	 * @param Admin\Form $form Handles form functions.
 	 */
-	public function __construct( Admin\Form $form ) {
+	public function __construct(Admin\Form $form)
+	{
 		$this->form = $form;
 	}
+
 
 	/**
 	 * Register the Menu Page.
@@ -149,19 +153,19 @@ class Admin {
 	 * @since  0.0.1
 	 * @access public
 	 */
-	public function register_menu_page() {
-		$this->sections    = apply_filters( strtolower( $this->options_str ) . '_sections', array() );
-		$this->fields      = apply_filters( strtolower( $this->options_str ) . '_fields', array() );
-		$this->values      = get_option( $this->options_str );
-		$this->hook_suffix = add_submenu_page(
-			'edit.php?post_type=' . $this->post_type,
-			$this->page_title,     // Page Title
+	public function register_menu_page()
+	{
+		$this->sections    = apply_filters(strtolower($this->options_str) . '_sections', []);
+		$this->fields      = apply_filters(strtolower($this->options_str) . '_fields', []);
+		$this->values      = get_option($this->options_str);
+		$this->hook_suffix = add_submenu_page('edit.php?post_type=' . $this->post_type, $this->page_title,     // Page Title
 			$this->menu_title,     // Menu Title
 			$this->user_cap,       // Capability
 			$this->plugin_slug,    // Menu Slug
-			array( $this, 'form' ) // Function
+			[$this, 'form'] // Function
 		);
 	}
+
 
 	/*
 	 * Initialization function for the settings page.
@@ -173,28 +177,14 @@ class Admin {
 	 * @since 0.0.1
 	 * @access public
 	 */
-	public function menu_page_init() {
+	public function menu_page_init()
+	{
 		// Register settings
 		$this->register_settings();
 		// Creates the settings var to be referred to
 		$this->add_sections();
 		// Errors
-		add_action( 'admin_notices', array( $this, 'add_errors' ) );
-	}
-
-	/**
-	 * Displays Form. WordPress requires a function be used to display the input form.
-	 *
-	 * @since  0.0.1
-	 * @access public
-	 */
-	public function form() {
-		$this->form->values            = $this->values;
-		$this->form->options_str       = $this->options_str;
-		$this->form->title             = $this->page_title;
-		$this->form->settings_fields   = $this->options_grp;
-		$this->form->settings_sections = $this->plugin_slug;
-		$this->form->render_form();
+		add_action('admin_notices', [$this, 'add_errors']);
 	}
 
 
@@ -204,14 +194,12 @@ class Admin {
 	 * @since  0.0.1
 	 * @access public
 	 */
-	public function register_settings() {
+	public function register_settings()
+	{
 		// register our settings
-		register_setting(
-			$this->options_grp,
-			$this->options_str,
-			array( $this, 'options_validate' )
-		);
+		register_setting($this->options_grp, $this->options_str, [$this, 'options_validate']);
 	}
+
 
 	/**
 	 * Create form for plugin settings.
@@ -219,82 +207,22 @@ class Admin {
 	 * @since  0.0.1
 	 * @access public
 	 */
-	public function add_sections() {
+	public function add_sections()
+	{
 
-		if ( $this->sections ) {
-			foreach ( $this->sections as $section ) {
-				$this->create_settings_section( $section );
+		if ($this->sections) {
+			foreach ($this->sections as $section) {
+				$this->create_settings_section($section);
 			}
 		}
 
-		if ( $this->fields ) {
-			foreach ( $this->fields as $setting ) {
-				$this->create_settings_field( $setting );
+		if ($this->fields) {
+			foreach ($this->fields as $setting) {
+				$this->create_settings_field($setting);
 			}
 		}
 	}
 
-	/**
-	 * Sanitize and validate input. Accepts an array, return a sanitized array.
-	 *
-	 * @TODO   Set up validation
-	 *
-	 * @since  0.0.1
-	 * @access public
-	 *
-	 * @param array $input
-	 *
-	 * @return array $new_input
-	 */
-	public function options_validate( $input ) {
-
-		return $input;
-	}
-
-	/**
-	 * Basic section callback. Creates the settings header.
-	 *
-	 * @since  0.0.1
-	 * @access public
-	 *
-	 * @param $args array
-	 */
-	public function basic_section_callback( $args ) {
-
-	}
-
-	/**
-	 * Creates input
-	 *
-	 * @TODO   Add Labels
-	 *
-	 * @since  0.0.1
-	 * @access public
-	 *
-	 * @param $args array
-	 */
-	public function basic_input_callback( $args ) {
-		// Why is it so nested?
-		$args = $args[0];
-		// Field values
-		$id     = $this->options_str . '[' . $args['id'] . ']';
-		$title  = $args['title'];
-		$values = get_option( $this->options_str );
-		$value  = $values[ $args['id'] ];
-		?>
-		<div>
-			<input type="<?php echo $args->field; ?>"
-			       id="<?php _e( $id, 'dfp-ads' ); ?>"
-			       name="<?php _e( $id, 'dfp-ads' ); ?>"
-			       value="<?php _e( $value, 'dfp-ads' ); ?>"/>
-			<?php
-			if ( isset( $args['description'] ) ) {
-				echo '<p><em>' . $args['description'] . '</em></p>';
-			}
-			?>
-		</div>
-		<?php
-	}
 
 	/**
 	 * Creates the settings sections
@@ -305,14 +233,15 @@ class Admin {
 	 * @param array $section ID = input ID,
 	 *                       Title = Name of field,
 	 */
-	protected function create_settings_section( $section ) {
-		add_settings_section(
-			$section['id'], //    'basic_settings', // ID
+	protected function create_settings_section($section)
+	{
+		add_settings_section($section['id'], //    'basic_settings', // ID
 			$section['title'], // 'Tags', // Title
-			array( $this, 'basic_section_callback' ), // Callback
+			[$this, 'basic_section_callback'], // Callback
 			$this->plugin_slug // Page
 		);
 	}
+
 
 	/**
 	 * Creates settings fields
@@ -327,16 +256,102 @@ class Admin {
 	 *              Callback = Callback function
 	 *              Description = Description below field
 	 */
-	protected function create_settings_field( $settings ) {
-		add_settings_field(
-			$settings['id'], // ID
+	protected function create_settings_field($settings)
+	{
+		add_settings_field($settings['id'], // ID
 			$settings['title'], // Title
-			array( $this->form, $settings['callback'] ), // Callback
+			[$this->form, $settings['callback']], // Callback
 			$this->plugin_slug, // Page
 			$settings['section'], // Section
-			array( $settings ) // Args
+			[$settings] // Args
 		);
 	}
+
+
+	/**
+	 * Displays Form. WordPress requires a function be used to display the input form.
+	 *
+	 * @since  0.0.1
+	 * @access public
+	 */
+	public function form()
+	{
+		$this->form->values            = $this->values;
+		$this->form->options_str       = $this->options_str;
+		$this->form->title             = $this->page_title;
+		$this->form->settings_fields   = $this->options_grp;
+		$this->form->settings_sections = $this->plugin_slug;
+		$this->form->render_form();
+	}
+
+
+	/**
+	 * Sanitize and validate input. Accepts an array, return a sanitized array.
+	 *
+	 * @TODO   Set up validation
+	 *
+	 * @since  0.0.1
+	 * @access public
+	 *
+	 * @param array $input
+	 *
+	 * @return array $new_input
+	 */
+	public function options_validate($input)
+	{
+
+		return $input;
+	}
+
+
+	/**
+	 * Basic section callback. Creates the settings header.
+	 *
+	 * @since  0.0.1
+	 * @access public
+	 *
+	 * @param $args array
+	 */
+	public function basic_section_callback($args)
+	{
+
+	}
+
+
+	/**
+	 * Creates input
+	 *
+	 * @TODO   Add Labels
+	 *
+	 * @since  0.0.1
+	 * @access public
+	 *
+	 * @param $args array
+	 */
+	public function basic_input_callback($args)
+	{
+		// Why is it so nested?
+		$args = $args[0];
+		// Field values
+		$id     = $this->options_str . '[' . $args['id'] . ']';
+		$title  = $args['title'];
+		$values = get_option($this->options_str);
+		$value  = $values[$args['id']];
+		?>
+		<div>
+			<input type="<?php echo $args->field; ?>"
+				   id="<?php _e($id, 'dfp-ads'); ?>"
+				   name="<?php _e($id, 'dfp-ads'); ?>"
+				   value="<?php _e($value, 'dfp-ads'); ?>"/>
+			<?php
+			if (isset($args['description'])) {
+				echo '<p><em>' . $args['description'] . '</em></p>';
+			}
+			?>
+		</div>
+		<?php
+	}
+
 
 	/**
 	 * Queue up the errors
@@ -344,9 +359,11 @@ class Admin {
 	 * @since  0.0.1
 	 * @access public
 	 */
-	public function add_errors() {
-		settings_errors( $this->options_str );
+	public function add_errors()
+	{
+		settings_errors($this->options_str);
 	}
+
 
 	/**
 	 * Add Error or Update Message to admin page.
@@ -359,12 +376,8 @@ class Admin {
 	 * @param string $message Message to send to user
 	 * @param string $type    Type of Message: Error / Updated
 	 */
-	public function new_error( $message, $type ) {
-		add_settings_error(
-			$this->options_str,
-			'settings_updated',
-			$message,
-			$type
-		);
+	public function new_error($message, $type)
+	{
+		add_settings_error($this->options_str, 'settings_updated', $message, $type);
 	}
 }

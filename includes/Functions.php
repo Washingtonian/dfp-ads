@@ -20,8 +20,9 @@ use DFP_Ads\Post_type as DFP_Ads_Post_Type;
  *
  * @param $id int
  */
-function dfp_ad_position( $id ) {
-	$position = new DFP_Ad_Position( $id );
+function dfp_ad_position($id)
+{
+	$position = new DFP_Ad_Position($id);
 	$position->display_position();
 }
 
@@ -32,29 +33,30 @@ function dfp_ad_position( $id ) {
  *
  * @return array
  */
-function dfp_get_ad_positions() {
-	$args = array(
+function dfp_get_ad_positions()
+{
+	$args = [
 		'post_type'           => 'dfp_ads',
 		'post_status'         => 'publish',
-		'posts_per_page'      => - 1,
-		'ignore_sticky_posts' => 1
-	);
+		'posts_per_page'      => -1,
+		'ignore_sticky_posts' => 1,
+	];
 	/**
 	 * @var WP_Query $all_ads
 	 */
-	$all_ads = new WP_Query( $args );
+	$all_ads = new WP_Query($args);
 
-	$positions = array();
-	if ( $all_ads->have_posts() ) {
-		while ( $all_ads->have_posts() ) :
+	$positions = [];
+	if ($all_ads->have_posts()) {
+		while ($all_ads->have_posts()) :
 			$all_ads->the_post();
-			$positions[] = new DFP_Ad_Position( get_the_ID() );
+			$positions[] = new DFP_Ad_Position(get_the_ID());
 		endwhile;
 	}
 
-	foreach ( $positions as $key => $position ) {
-		if ( $position->post_id == null ) {
-			unset( $positions[ $key ] );
+	foreach ($positions as $key => $position) {
+		if ($position->post_id == null) {
+			unset($positions[$key]);
 		}
 	}
 
@@ -74,12 +76,13 @@ function dfp_get_ad_positions() {
  *
  * @return null|DFP_Ad_position
  */
-function dfp_get_ad_position( $id ) {
-	$position = apply_filters( 'get_dfp_ad_position', get_post( $id ) );
+function dfp_get_ad_position($id)
+{
+	$position = apply_filters('get_dfp_ad_position', get_post($id));
 
-	if ( $position !== null && $position->post_type === 'dfp_ads' ) {
+	if ($position !== null && $position->post_type === 'dfp_ads') {
 
-		return new DFP_Ad_Position( $position->ID );
+		return new DFP_Ad_Position($position->ID);
 	} else {
 
 		return false;
@@ -97,10 +100,11 @@ function dfp_get_ad_position( $id ) {
  *
  * @return null|DFP_Ad_position
  */
-function dfp_get_ad_position_by_name( $title ) {
-	$position = apply_filters( 'get_dfp_ad_position', get_page_by_title( $title, $output = 'OBJECT', $post_type = 'dfp_ads' ) );
+function dfp_get_ad_position_by_name($title)
+{
+	$position = apply_filters('get_dfp_ad_position', get_page_by_title($title, $output = 'OBJECT', $post_type = 'dfp_ads'));
 
-	return ( $position->post_type !== 'dfp_ads' ? false : new DFP_Ad_Position( $position->ID ) );
+	return ($position->post_type !== 'dfp_ads' ? false : new DFP_Ad_Position($position->ID));
 }
 
 /**
@@ -110,9 +114,10 @@ function dfp_get_ad_position_by_name( $title ) {
  *
  * @return mixed|void
  */
-function dfp_get_fields() {
+function dfp_get_fields()
+{
 
-	return apply_filters( DFP_Ads_Post_Type::FIELDS_FILTER, array() );
+	return apply_filters(DFP_Ads_Post_Type::FIELDS_FILTER, []);
 }
 
 /**
@@ -124,25 +129,26 @@ function dfp_get_fields() {
  *
  * @return array
  */
-function dfp_get_ad_sizes( $size_string ) {
-	$sizes_array = array();
+function dfp_get_ad_sizes($size_string)
+{
+	$sizes_array = [];
 	// Check if there are any sizes to explode
-	if ( strlen( $size_string ) > 0 ) {
-		$sizes = explode( ',', $size_string );
+	if (strlen($size_string) > 0) {
+		$sizes = explode(',', $size_string);
 	} else {
 		return null;
 	}
 
-	if ( count( $sizes ) > 1 ) {
-		foreach ( $sizes as $size ) {
-			$sizes_array[] = explode( 'x', $size );
+	if (count($sizes) > 1) {
+		foreach ($sizes as $size) {
+			$sizes_array[] = explode('x', $size);
 		}
 	} else {
-		$sizes_array = explode( 'x', $sizes[0] );
+		$sizes_array = explode('x', $sizes[0]);
 	}
 
 	// Trim array and eval everything into integers
-	return dfp_intval_array( dfp_trim_array( $sizes_array ) );
+	return dfp_intval_array(dfp_trim_array($sizes_array));
 }
 
 /**
@@ -154,14 +160,15 @@ function dfp_get_ad_sizes( $size_string ) {
  *
  * @return array
  */
-function dfp_intval_array( $array ) {
+function dfp_intval_array($array)
+{
 
-	if ( ! is_array( $array ) ) {
+	if ( ! is_array($array)) {
 
-		return intval( $array );
+		return intval($array);
 	}
 
-	return array_map( 'dfp_intval_array', $array );
+	return array_map('dfp_intval_array', $array);
 }
 
 /**
@@ -179,14 +186,15 @@ function dfp_intval_array( $array ) {
  *
  * @return array
  */
-function dfp_trim_array( $input ) {
+function dfp_trim_array($input)
+{
 
-	if ( ! is_array( $input ) ) {
+	if ( ! is_array($input)) {
 
-		return trim( $input );
+		return trim($input);
 	}
 
-	return array_map( 'dfp_trim_array', $input );
+	return array_map('dfp_trim_array', $input);
 }
 
 /**
@@ -198,10 +206,11 @@ function dfp_trim_array( $input ) {
  *
  * @param $post_id int
  */
-function dfp_ads_shortcode_field( $post_id ) {
+function dfp_ads_shortcode_field($post_id)
+{
 	?>
 	<input style="text-align:center;" type="text" readonly
-	       value="<?php printf( __( '[dfp_ads id=%1s]', 'dfp-ads' ), $post_id ); ?>"/>
+		   value="<?php printf(__('[dfp_ads id=%1s]', 'dfp-ads'), $post_id); ?>"/>
 	<?php
 }
 
@@ -217,13 +226,14 @@ function dfp_ads_shortcode_field( $post_id ) {
  *
  * @return string
  */
-function dfp_get_url() {
+function dfp_get_url()
+{
 	$pageURL = 'http';
-	if ( isset( $_SERVER["HTTPS"] ) && $_SERVER["HTTPS"] == "on" ) {
+	if (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on") {
 		$pageURL .= "s";
 	}
 	$pageURL .= "://";
-	if ( $_SERVER["SERVER_PORT"] != "80" ) {
+	if ($_SERVER["SERVER_PORT"] != "80") {
 		$pageURL .= $_SERVER["SERVER_NAME"] . ":" . $_SERVER["SERVER_PORT"] . $_SERVER["REQUEST_URI"];
 	} else {
 		$pageURL .= $_SERVER["SERVER_NAME"] . $_SERVER["REQUEST_URI"];
@@ -243,10 +253,11 @@ function dfp_get_url() {
  *
  * @return array|string|int|bool|null
  */
-function dfp_get_settings_value( $setting ) {
-	$option_array = get_option( 'DFP_Ads_Settings' );
+function dfp_get_settings_value($setting)
+{
+	$option_array = get_option('DFP_Ads_Settings');
 
-	return ( isset( $option_array[ $setting ] ) ? $option_array[ $setting ] : null );
+	return (isset($option_array[$setting]) ? $option_array[$setting] : null);
 }
 
 /**
@@ -257,10 +268,11 @@ function dfp_get_settings_value( $setting ) {
  *
  * @param int|string $value Value
  */
-function dfp_ad_select_options( $value ) {
+function dfp_ad_select_options($value)
+{
 	echo '<option value="false">Select Position</option>';
 	$positions = dfp_get_ad_positions();
-	foreach ( $positions as $position ) {
-		echo '<option' . selected( $value, $position->post_id ) . ' value="' . $position->post_id . '">(' . $position->post_id . ') ' . $position->title . '</option>';
+	foreach ($positions as $position) {
+		echo '<option' . selected($value, $position->post_id) . ' value="' . $position->post_id . '">(' . $position->post_id . ') ' . $position->title . '</option>';
 	}
 }

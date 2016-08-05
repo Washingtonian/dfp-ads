@@ -12,8 +12,7 @@
  */
 namespace DFP_Ads\Admin;
 
-use DFP_Ads\Globals_Container as DFP_Ads_Globals;
-use Ddeboer\DataImport\Reader\CsvReader;
+use Ddeboer\DataImport\Reader\CsvReader;use DFP_Ads\Globals_Container as DFP_Ads_Globals;
 
 class Import_Form extends Form {
 
@@ -53,22 +52,6 @@ class Import_Form extends Form {
         <?php
     }
 
-	public function import_form() {
-		?>
-		<form id="CSVImport" name="CSVImport" method="post" enctype="multipart/form-data">
-            <?php settings_fields( $this->settings_fields ); ?>
-            <?php do_settings_sections( $this->settings_sections ); ?>
-            <?php $this->button( 'Import CSV' ); ?>
-		</form>
-            </div>
-        </div>
-        <div class="postbox ">
-            <div class="inside">
-                <p>
-                    For instructions on how to import from CSV, visit
-                    <a href="http://www.chriswgerber.com/dfp-ads/import-from-csv" target="_blank">www.chriswgerber.com/dfp-ads/import-from-csv</a>.</p>
-		<?php
-	}
 
 	public function prepare_data( $file ) {
 		echo '<h3>Choose the positions to import</h3>';
@@ -82,6 +65,7 @@ class Import_Form extends Form {
 		$this->button( 'Confirm Import', true );
 		echo '</form>';
 	}
+
 
 	/**
      * @TODO Add Labels
@@ -113,6 +97,21 @@ class Import_Form extends Form {
 		<?php
 	}
 
+
+    /**
+     * Sets up data to be imported
+     *
+     * @param CSVReader $reader
+     */
+    public function setup_data( $reader ) {
+        $transient = [];
+        foreach ( $reader as $key => $value ) {
+            $transient[$key] = $value;
+        }
+        set_transient( 'import_data', $transient, 30 );
+    }
+
+
     public function import_data() {
         $data = get_transient( 'import_data' );
         $new_positions = DFP_Ads_Globals::filter_post_var( 'code', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
@@ -125,18 +124,21 @@ class Import_Form extends Form {
         }
     }
 
-    /**
-     * Sets up data to be imported
-     *
-     * @param CSVReader $reader
-     */
-    public function setup_data( $reader ) {
-        $transient = array();
-        foreach ( $reader as $key => $value ) {
-            $transient[$key] = $value;
-        }
-        set_transient( 'import_data', $transient, 30 );
+
+    public function add_position( $position ) {
+        $post = [
+            'post_content' => $position['Description'],
+            'post_title'   => $position['#Code'],
+            'post_status'  => 'publish',
+            'post_type'    => 'dfp_ads',
+            'post_author'  => get_current_user_id(),
+        ];
+        $ad_post_id = wp_insert_post( $post );
+        update_post_meta( $ad_post_id, 'dfp_ad_code', $position['#Code'] );
+        update_post_meta( $ad_post_id, 'dfp_position_name', $position['Name'] );
+        update_post_meta( $ad_post_id, 'dfp_position_sizes', $position['Sizes'] );
     }
+
 
 	public function return_button( $text ) {
 		echo '<form id="return" name="return" method="post">';
@@ -145,19 +147,24 @@ class Import_Form extends Form {
 		echo '</form>';
 	}
 
-    public function add_position( $position ) {
-        $post = array(
-            'post_content' => $position['Description'],
-            'post_title'   => $position['#Code'],
-            'post_status'  => 'publish',
-            'post_type'    => 'dfp_ads',
-            'post_author'  => get_current_user_id(),
-        );
-        $ad_post_id = wp_insert_post( $post );
-        update_post_meta( $ad_post_id, 'dfp_ad_code', $position['#Code'] );
-        update_post_meta( $ad_post_id, 'dfp_position_name', $position['Name'] );
-        update_post_meta( $ad_post_id, 'dfp_position_sizes', $position['Sizes'] );
-    }
+
+	public function import_form() {
+		?>
+		<form id="CSVImport" name="CSVImport" method="post" enctype="multipart/form-data">
+            <?php settings_fields( $this->settings_fields ); ?>
+            <?php do_settings_sections( $this->settings_sections ); ?>
+            <?php $this->button( 'Import CSV' ); ?>
+		</form>
+            </div>
+        </div>
+        <div class="postbox ">
+            <div class="inside">
+                <p>
+                    For instructions on how to import from CSV, visit
+                    <a href="http://www.chriswgerber.com/dfp-ads/import-from-csv" target="_blank">www.chriswgerber.com/dfp-ads/import-from-csv</a>.</p>
+		<?php
+	}
+
 
 	public function file( $args ) {
 		// Nested args....
