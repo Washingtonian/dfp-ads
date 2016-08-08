@@ -75,18 +75,18 @@ googletag.cmd.push(function () {
      * @param {Object} position - Array of ad positions
      */
     function define_ad_slot(position) {
-        googleAdUnit = googletag.defineSlot(
-            acct_id + position.ad_name,
-            position.sizes,
-            position.position_tag
-        ).setCollapseEmptyDiv(true, true).addService(googletag.pubads());
-        // console.log(position.out_of_page);
-        // if (position.out_of_page === true) {
-        //     googleAdUnit = googletag.defineOutOfPageSlot(
-        //         acct_id + position.ad_name,
-        //         position.position_tag + '-oop'
-        //     ).setCollapseEmptyDiv(true, true).addService(googletag.pubads());
-        // }
+        if (position.out_of_page === true) {
+            googleAdUnit = googletag.defineOutOfPageSlot(
+                acct_id + position.ad_name,
+                position.position_tag + '-oop'
+            ).setCollapseEmptyDiv(true, true).addService(googletag.pubads());
+        } else {
+            googleAdUnit = googletag.defineSlot(
+                acct_id + position.ad_name,
+                position.sizes,
+                position.position_tag
+            ).setCollapseEmptyDiv(true, true).addService(googletag.pubads());
+        }
     }
 
     /**
