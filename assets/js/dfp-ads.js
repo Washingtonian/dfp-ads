@@ -2,7 +2,6 @@
  * Javascript for Google Ads
  *
  **/
-
 /**
  * Browser sizes [browser size] [ad size]
  * @type {Array}
@@ -27,8 +26,15 @@ var browser_sizes = [
 ];
 
 var alternate_sizes = [
-    ['300,600', [[300, 600], [300, 250]]],
-    ['970,250', [[970, 250], [728, 90], [970, 90]]]
+    ['300,600', [
+        [300, 600],
+        [300, 250]
+    ]],
+    ['970,250', [
+        [970, 250],
+        [728, 90],
+        [970, 90]
+    ]]
 ];
 
 var windowWidth = window.innerWidth;
@@ -81,6 +87,7 @@ googletag.cmd.push(function () {
                 position.position_tag
             ).setCollapseEmptyDiv(true, true).addService(googletag.pubads());
         } else {
+
             googleAdUnit = googletag.defineSlot(
                 acct_id + position.ad_name,
                 position.sizes,
@@ -108,6 +115,10 @@ googletag.cmd.push(function () {
 
         var map = googletag.sizeMapping();
 
+        if (position.sizes.includes('fluid')) {
+            return false;
+        }
+
         if (!Array.isArray(position['sizes'][0])) {
             var arrayPosition0 = position['sizes'][0];
             var arrayPosition1 = position['sizes'][1];
@@ -124,6 +135,7 @@ googletag.cmd.push(function () {
                 }
             }
         } else {
+
 
             for (var size in position['sizes']) {
 
@@ -144,13 +156,9 @@ googletag.cmd.push(function () {
                 }
             }
         }
-
-
         map.addSize([0, 0], []);
-
         googleAdUnit.defineSizeMapping(map.build());
     }
-
 
     window.addEventListener('resize', function () {
         var currentWidth = window.innerWidth;
