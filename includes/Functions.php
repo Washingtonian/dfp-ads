@@ -141,14 +141,15 @@ function dfp_get_ad_sizes($size_string)
 
     if (count($sizes) > 1) {
         foreach ($sizes as $size) {
-            if (str_contains('x', $size)) {
+
+            if (str_contains($size, 'x')) {
                 $sizes_array[] = explode('x', $size);
             } else {
                 $sizes_array[] = $size;
             }
         }
     } else {
-        if (str_contains('x', $sizes[0])) {
+        if (str_contains($sizes[0], 'x')) {
             $sizes_array = explode('x', $sizes[0]);
         } else {
             $sizes_array[] = $sizes[0];
