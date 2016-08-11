@@ -31,7 +31,6 @@ var alternate_sizes = [
     ['970,250', [[970, 250], [728, 90], [970, 90]]]
 ];
 
-var windowHight = window.innerHeight;
 var windowWidth = window.innerWidth;
 
 googletag.cmd.push(function () {
@@ -79,7 +78,7 @@ googletag.cmd.push(function () {
         if (position.out_of_page === true) {
             googleAdUnit = googletag.defineOutOfPageSlot(
                 acct_id + position.ad_name,
-                position.position_tag + '-oop'
+                position.position_tag
             ).setCollapseEmptyDiv(true, true).addService(googletag.pubads());
         } else {
             googleAdUnit = googletag.defineSlot(
@@ -103,7 +102,7 @@ googletag.cmd.push(function () {
 
     /**
      * Set Size Mappings
-     * @param {[type]} sizes [description]
+     * @param {[type]} position [description]
      */
     function set_size_mappings(position) {
 
