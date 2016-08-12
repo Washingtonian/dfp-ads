@@ -48,10 +48,18 @@ googletag.cmd.push(function () {
     var dfp_ad_data = dfp_ad_object[0],
         acct_id = dfp_ad_data.account_id;
 
+
+    if (getCookie('dfp_session_tracker') > 10) {
+        deleteCookie('dfp_session_tracker');
+    }
+    if (getCookie('dfp_session_tracker')) {
+        setCookie("dfp_session_tracker", parseInt(getCookie('dfp_session_tracker')) + parseInt(1), 1);
+    } else {
+        setCookie("dfp_session_tracker", parseInt(1), 1);
+    }
+
     for (var position in dfp_ad_data['positions']) {
-
         var target = dfp_ad_data['positions'][position]['position_tag'];
-
         if (target != null || target != undefined) {
             if (document.getElementById(target) === null) {
                 dfp_ad_data['positions'][position] = null;
@@ -85,14 +93,14 @@ googletag.cmd.push(function () {
             googleAdUnit = googletag.defineOutOfPageSlot(
                 acct_id + position.ad_name,
                 position.position_tag
-            ).setCollapseEmptyDiv(true, true).addService(googletag.pubads());
+            ).setCollapseEmptyDiv(true).addService(googletag.pubads());
         } else {
 
             googleAdUnit = googletag.defineSlot(
                 acct_id + position.ad_name,
                 position.sizes,
                 position.position_tag
-            ).setCollapseEmptyDiv(true, true).addService(googletag.pubads());
+            ).setCollapseEmptyDiv(true).addService(googletag.pubads());
         }
     }
 
@@ -105,6 +113,9 @@ googletag.cmd.push(function () {
             var key = target.toLowerCase();
             googletag.pubads().setTargeting(key, targeting[target]);
         }
+        dfp_session_tracker = getCookie('dfp_session_tracker');
+        googletag.pubads().setTargeting('pageviews', dfp_session_tracker);
+
     }
 
     /**
@@ -157,8 +168,12 @@ googletag.cmd.push(function () {
             }
         }
         map.addSize([0, 0], []);
+
         googleAdUnit.defineSizeMapping(map.build());
+
+
     }
+
 
     window.addEventListener('resize', function () {
         var currentWidth = window.innerWidth;
@@ -179,44 +194,50 @@ googletag.cmd.push(function () {
         }
     }
 
-    if (!Array.prototype.includes) {
-        Array.prototype.includes = function(searchElement /*, fromIndex*/) {
-            'use strict';
-            if (this == null) {
-                throw new TypeError('Array.prototype.includes called on null or undefined');
-            }
 
-            var O = Object(this);
-            var len = parseInt(O.length, 10) || 0;
-            if (len === 0) {
-                return false;
-            }
-            var n = parseInt(arguments[1], 10) || 0;
-            var k;
-            if (n >= 0) {
-                k = n;
-            } else {
-                k = len + n;
-                if (k < 0) {k = 0;}
-            }
-            var currentElement;
-            while (k < len) {
-                currentElement = O[k];
-                if (searchElement === currentElement ||
-                    (searchElement !== searchElement && currentElement !== currentElement)) { // NaN !== NaN
-                    return true;
-                }
-                k++;
-            }
-            return false;
-        };
-    }
     /**
      * [resizer description]
      * @return {[type]} [description]
      */
     function resizer() {
         googletag.pubads().refresh();
+    }
+
+    /**
+     *
+     * @param cname
+     * @param cvalue
+     * @param exdays
+     */
+    function setCookie(cname, cvalue, exdays) {
+        var d = new Date();
+        d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+        var expires = "expires=" + d.toUTCString();
+        document.cookie = cname + "=" + cvalue + "; " + expires;
+    }
+
+    /**
+     *
+     * @param cname
+     * @returns {*}
+     */
+    function getCookie(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') c = c.substring(1);
+            if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
+        }
+        return "";
+    }
+
+    /**
+     *
+     * @param name
+     */
+    function deleteCookie(name) {
+        document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
     }
 
     // Generates Ad Slots
