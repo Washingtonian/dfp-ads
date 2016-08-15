@@ -48,11 +48,7 @@ googletag.cmd.push(function () {
     var dfp_ad_data = dfp_ad_object[0],
         acct_id = dfp_ad_data.account_id;
 
-
-    if (getCookie('dfp_session_tracker') > 10) {
-        deleteCookie('dfp_session_tracker');
-    }
-    if (getCookie('dfp_session_tracker')) {
+    if (getCookie('dfp_session_tracker') && parseInt(getCookie('dfp_session_tracker')) < 11) {
         setCookie("dfp_session_tracker", parseInt(getCookie('dfp_session_tracker')) + parseInt(1), 1);
     } else {
         setCookie("dfp_session_tracker", parseInt(1), 1);
@@ -213,7 +209,7 @@ googletag.cmd.push(function () {
         var d = new Date();
         d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
         var expires = "expires=" + d.toUTCString();
-        document.cookie = cname + "=" + cvalue + "; " + expires;
+        document.cookie = cname + "=" + cvalue + "; " + expires + "; path=/";
     }
 
     /**
@@ -237,7 +233,7 @@ googletag.cmd.push(function () {
      * @param name
      */
     function deleteCookie(name) {
-        document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+        document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/';
     }
 
     // Generates Ad Slots
