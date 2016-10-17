@@ -89,14 +89,14 @@ googletag.cmd.push(function () {
             googleAdUnit = googletag.defineOutOfPageSlot(
                 acct_id + position.ad_name,
                 position.position_tag
-            ).setCollapseEmptyDiv(true).addService(googletag.pubads());
+            ).setCollapseEmptyDiv(false).addService(googletag.pubads());
         } else {
 
             googleAdUnit = googletag.defineSlot(
                 acct_id + position.ad_name,
                 position.sizes,
                 position.position_tag
-            ).setCollapseEmptyDiv(true).addService(googletag.pubads());
+            ).setCollapseEmptyDiv(false).addService(googletag.pubads());
         }
     }
 
