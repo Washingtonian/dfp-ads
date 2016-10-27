@@ -245,7 +245,7 @@ googletag.cmd.push(function () {
     load_ad_positions(dfp_ad_data.positions);
 
     // Collapse Empty Divs
-    googletag.pubads().collapseEmptyDivs(true);
+    googletag.pubads().collapseEmptyDivs(false);
 
     // Targeting
     set_targeting(dfp_ad_data.page_targeting);
