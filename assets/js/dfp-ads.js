@@ -248,7 +248,9 @@ googletag.cmd.push(function () {
     googletag.pubads().collapseEmptyDivs(false);
 
     // Targeting
-    set_targeting(dfp_ad_data.page_targeting);
+    if(window.location.origin != window.location.href) {
+        set_targeting(dfp_ad_data.page_targeting);
+    }
 
     // Asynchronous Loading
     if (dfp_ad_data.asynch === true) {
