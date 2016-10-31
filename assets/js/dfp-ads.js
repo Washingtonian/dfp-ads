@@ -248,7 +248,7 @@ googletag.cmd.push(function () {
     googletag.pubads().collapseEmptyDivs(false);
 
     // Targeting
-    if (!jQuery('body.home').length === 0) {
+    if (jQuery('body.home').length === 0) {
         set_targeting(dfp_ad_data.page_targeting);
     } else {
         set_targeting({"Page":["Home"]});
