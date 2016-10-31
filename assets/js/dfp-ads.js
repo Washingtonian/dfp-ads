@@ -248,7 +248,7 @@ googletag.cmd.push(function () {
     googletag.pubads().collapseEmptyDivs(false);
 
     // Targeting
-    if(window.location.origin != window.location.href) {
+    if (window.location.pathname === '/') {
         set_targeting(dfp_ad_data.page_targeting);
     }
 
