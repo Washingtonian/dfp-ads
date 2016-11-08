@@ -263,11 +263,11 @@ googletag.cmd.push(function () {
     googletag.pubads().enableSingleRequest();
 
     // This will be required for header bidding in the future:
-    // googletag.pubads().disableInitialLoad();
+    googletag.pubads().disableInitialLoad();
 
     // Go
     googletag.enableServices();
 
-    // googletag.pubads().refresh();
+    googletag.pubads().refresh();
 
 });
