@@ -47,8 +47,6 @@ var windowWidth = window.innerWidth;
 googletag.cmd.push(function () {
 
     var resizeTimer;
-    var googleAdUnit;
-
     // Object from Ajax
     var dfp_ad_data = dfp_ad_object[0],
         acct_id = dfp_ad_data.account_id;
@@ -59,12 +57,12 @@ googletag.cmd.push(function () {
         setCookie("dfp_session_tracker", parseInt(1), 1);
     }
 
-    for (var position in dfp_ad_data['positions']) {
-        var target = dfp_ad_data['positions'][position]['position_tag'];
+    for (var i = 0; i < dfp_ad_data['positions'].length; i++) {
+        var target = dfp_ad_data['positions'][i]['position_tag'];
         if (target != null || target != undefined) {
             if (document.getElementById(target) === null) {
-                dfp_ad_data['positions'][position] = null;
-            }
+                dfp_ad_data['positions'][i] = null;
+              }
         }
     }
 
@@ -78,8 +76,10 @@ googletag.cmd.push(function () {
         // Run through positions
         for (ad_pos = 0, len = positions.length; ad_pos < len; ++ad_pos) {
             if (positions[ad_pos] != null) {
-                define_ad_slot(positions[ad_pos]);
-                set_size_mappings(positions[ad_pos]);
+                var theUnit = define_ad_slot(positions[ad_pos]);
+                if (theUnit) {
+                  set_size_mappings(theUnit, positions[ad_pos]);
+                }
             }
         }
     }
@@ -91,17 +91,18 @@ googletag.cmd.push(function () {
      */
     function define_ad_slot(position) {
         if (position.out_of_page === true) {
-            googleAdUnit = googletag.defineOutOfPageSlot(
+            return googletag.defineOutOfPageSlot(
                 acct_id + position.ad_name,
                 position.position_tag
-            ).setCollapseEmptyDiv(false).addService(googletag.pubads());
+            ).addService(googletag.pubads());
         } else {
-
-            googleAdUnit = googletag.defineSlot(
-                acct_id + position.ad_name,
-                position.sizes,
-                position.position_tag
-            ).setCollapseEmptyDiv(false).addService(googletag.pubads());
+          try {
+                  return googletag.defineSlot(
+                      acct_id + position.ad_name,
+                      position.sizes,
+                      position.position_tag
+                  ).addService(googletag.pubads());
+          } catch(err) {}
         }
     }
 
@@ -123,7 +124,7 @@ googletag.cmd.push(function () {
      * Set Size Mappings
      * @param {[type]} position [description]
      */
-    function set_size_mappings(position) {
+    function set_size_mappings(theUnit, position) {
 
         var map = googletag.sizeMapping();
 
@@ -170,7 +171,7 @@ googletag.cmd.push(function () {
         }
         map.addSize([0, 0], []);
 
-        googleAdUnit.defineSizeMapping(map.build());
+        theUnit.defineSizeMapping(map.build());
 
 
     }
@@ -261,6 +262,12 @@ googletag.cmd.push(function () {
     // Enable Single Request
     googletag.pubads().enableSingleRequest();
 
+    // This will be required for header bidding in the future:
+    // googletag.pubads().disableInitialLoad();
+
     // Go
     googletag.enableServices();
+
+    // googletag.pubads().refresh();
+
 });
