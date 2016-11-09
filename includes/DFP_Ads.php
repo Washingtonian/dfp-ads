@@ -295,7 +295,7 @@ Class DFP_Ads
         add_action('wp_head','inline_dfp_scripts',5);
 
         // Preps the script
-        wp_register_script($this->script_name, $dfp_ads_script_url, [$this->google_ad_script_name, 'jquery'], false, false);
+        wp_register_script($this->script_name, $dfp_ads_script_url, ['jquery'], false, false);
 
         // Send data to front end.
         wp_localize_script($this->script_name, 'dfp_ad_object', [$ad_positions]);
