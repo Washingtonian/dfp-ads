@@ -44,230 +44,227 @@ var alternate_sizes = [
 
 var windowWidth = window.innerWidth;
 
-googletag.cmd.push(function () {
+jQuery(document).ready(function() {
+  googletag.cmd.push(function () {
 
-    var resizeTimer;
-    // Object from Ajax
-    var dfp_ad_data = dfp_ad_object[0],
-        acct_id = dfp_ad_data.account_id;
+      var resizeTimer;
+      // Object from Ajax
+      var dfp_ad_data = dfp_ad_object[0],
+          acct_id = dfp_ad_data.account_id;
 
-    if (getCookie('dfp_session_tracker') && parseInt(getCookie('dfp_session_tracker')) < 10) {
-        setCookie("dfp_session_tracker", parseInt(getCookie('dfp_session_tracker')) + parseInt(1), 1);
-    } else {
-        setCookie("dfp_session_tracker", parseInt(1), 1);
-    }
+      if (getCookie('dfp_session_tracker') && parseInt(getCookie('dfp_session_tracker')) < 10) {
+          setCookie("dfp_session_tracker", parseInt(getCookie('dfp_session_tracker')) + parseInt(1), 1);
+      } else {
+          setCookie("dfp_session_tracker", parseInt(1), 1);
+      }
 
-    for (var i = 0; i < dfp_ad_data['positions'].length; i++) {
-        var target = dfp_ad_data['positions'][i]['position_tag'];
-        if (target != null || target != undefined) {
-            if (document.getElementById(target) === null) {
-                dfp_ad_data['positions'][i] = null;
+      for (var i = 0; i < dfp_ad_data['positions'].length; i++) {
+          var target = dfp_ad_data['positions'][i]['position_tag'];
+          if (target != null || target != undefined) {
+              if (document.getElementById(target) === null) {
+                  dfp_ad_data['positions'][i] = null;
+                }
+          }
+      }
+
+      /**
+       * Loads Ad Position
+       *
+       * @param {Array} positions - Array of ad positions
+       */
+      function load_ad_positions(positions) {
+          var ad_pos, len;
+          // Run through positions
+          for (ad_pos = 0, len = positions.length; ad_pos < len; ++ad_pos) {
+              if (positions[ad_pos] != null) {
+                  var theUnit = define_ad_slot(positions[ad_pos]);
+                  if (theUnit) {
+                    set_size_mappings(theUnit, positions[ad_pos]);
+                  }
               }
-        }
-    }
+          }
+      }
 
-    /**
-     * Loads Ad Position
-     *
-     * @param {Array} positions - Array of ad positions
-     */
-    function load_ad_positions(positions) {
-        var ad_pos, len;
-        // Run through positions
-        for (ad_pos = 0, len = positions.length; ad_pos < len; ++ad_pos) {
-            if (positions[ad_pos] != null) {
-                var theUnit = define_ad_slot(positions[ad_pos]);
-                if (theUnit) {
-                  set_size_mappings(theUnit, positions[ad_pos]);
-                }
-            }
-        }
-    }
+      /**
+       * Loads Ad Position
+       *
+       * @param {Object} position - Array of ad positions
+       */
+      function define_ad_slot(position) {
+          if (position.out_of_page === true) {
+              return googletag.defineOutOfPageSlot(
+                  acct_id + position.ad_name,
+                  position.position_tag
+              ).addService(googletag.pubads());
+          } else {
+            try {
+                    return googletag.defineSlot(
+                        acct_id + position.ad_name,
+                        position.sizes,
+                        position.position_tag
+                    ).addService(googletag.pubads());
+            } catch(err) {}
+          }
+      }
 
-    /**
-     * Loads Ad Position
-     *
-     * @param {Object} position - Array of ad positions
-     */
-    function define_ad_slot(position) {
-        if (position.out_of_page === true) {
-            return googletag.defineOutOfPageSlot(
-                acct_id + position.ad_name,
-                position.position_tag
-            ).addService(googletag.pubads());
-        } else {
-          try {
-                  return googletag.defineSlot(
-                      acct_id + position.ad_name,
-                      position.sizes,
-                      position.position_tag
-                  ).addService(googletag.pubads());
-          } catch(err) {}
-        }
-    }
+      /**
+       * Sets Page level targeting
+       * @param {object} targeting
+       */
+      function set_targeting(targeting) {
+          for (var target in targeting) {
+              var key = target.toLowerCase();
+              googletag.pubads().setTargeting(key, targeting[target]);
+          }
+          dfp_session_tracker = getCookie('dfp_session_tracker');
+          googletag.pubads().setTargeting('pageviews', dfp_session_tracker);
 
-    /**
-     * Sets Page level targeting
-     * @param {object} targeting
-     */
-    function set_targeting(targeting) {
-        for (var target in targeting) {
-            var key = target.toLowerCase();
-            googletag.pubads().setTargeting(key, targeting[target]);
-        }
-        dfp_session_tracker = getCookie('dfp_session_tracker');
-        googletag.pubads().setTargeting('pageviews', dfp_session_tracker);
+      }
 
-    }
+      /**
+       * Set Size Mappings
+       * @param {[type]} position [description]
+       */
+      function set_size_mappings(theUnit, position) {
 
-    /**
-     * Set Size Mappings
-     * @param {[type]} position [description]
-     */
-    function set_size_mappings(theUnit, position) {
+          var map = googletag.sizeMapping();
 
-        var map = googletag.sizeMapping();
+          if (position.sizes.includes('fluid')) {
+              return false;
+          }
 
-        if (position.sizes.includes('fluid')) {
-            return false;
-        }
-
-        if (!Array.isArray(position['sizes'][0])) {
-            var arrayPosition0 = position['sizes'][0];
-            var arrayPosition1 = position['sizes'][1];
-            checkForUndefined(arrayPosition0);
-            for (var browser in browser_sizes) {
-                if (browser_sizes[browser][1] == arrayPosition0 + ',' + arrayPosition1) {
-                    for (var alt_size in alternate_sizes) {
-                        checkForUndefined(alternate_sizes[alt_size]);
-                        if (alternate_sizes[alt_size][0] == arrayPosition0 + ',' + arrayPosition1) {
-                            map.addSize(browser_sizes[browser][0].split(',').map(Number), alternate_sizes[alt_size][1]);
-                        }
-                    }
-                    map.addSize(browser_sizes[browser][0].split(',').map(Number), [arrayPosition0, arrayPosition1]);
-                }
-            }
-        } else {
+          if (!Array.isArray(position['sizes'][0])) {
+              var arrayPosition0 = position['sizes'][0];
+              var arrayPosition1 = position['sizes'][1];
+              checkForUndefined(arrayPosition0);
+              for (var browser in browser_sizes) {
+                  if (browser_sizes[browser][1] == arrayPosition0 + ',' + arrayPosition1) {
+                      for (var alt_size in alternate_sizes) {
+                          checkForUndefined(alternate_sizes[alt_size]);
+                          if (alternate_sizes[alt_size][0] == arrayPosition0 + ',' + arrayPosition1) {
+                              map.addSize(browser_sizes[browser][0].split(',').map(Number), alternate_sizes[alt_size][1]);
+                          }
+                      }
+                      map.addSize(browser_sizes[browser][0].split(',').map(Number), [arrayPosition0, arrayPosition1]);
+                  }
+              }
+          } else {
 
 
-            for (var size in position['sizes']) {
+              for (var size in position['sizes']) {
 
-                var arrayPosition0 = position['sizes'][size][0];
-                var arrayPosition1 = position['sizes'][size][1];
-                checkForUndefined(arrayPosition0);
-                for (var browser in browser_sizes) {
-                    checkForUndefined(browser_sizes[browser][1]);
-                    if (browser_sizes[browser][1] == arrayPosition0 + ',' + arrayPosition1) {
-                        for (var alt_size in alternate_sizes) {
-                            checkForUndefined(alternate_sizes[alt_size]);
-                            if (alternate_sizes[alt_size][0] == arrayPosition0 + ',' + arrayPosition1) {
-                                map.addSize(browser_sizes[browser][0].split(',').map(Number), alternate_sizes[alt_size][1]);
-                            }
-                        }
-                        map.addSize(browser_sizes[browser][0].split(',').map(Number), position['sizes'][size]);
-                    }
-                }
-            }
-        }
-        map.addSize([0, 0], []);
+                  var arrayPosition0 = position['sizes'][size][0];
+                  var arrayPosition1 = position['sizes'][size][1];
+                  checkForUndefined(arrayPosition0);
+                  for (var browser in browser_sizes) {
+                      checkForUndefined(browser_sizes[browser][1]);
+                      if (browser_sizes[browser][1] == arrayPosition0 + ',' + arrayPosition1) {
+                          for (var alt_size in alternate_sizes) {
+                              checkForUndefined(alternate_sizes[alt_size]);
+                              if (alternate_sizes[alt_size][0] == arrayPosition0 + ',' + arrayPosition1) {
+                                  map.addSize(browser_sizes[browser][0].split(',').map(Number), alternate_sizes[alt_size][1]);
+                              }
+                          }
+                          map.addSize(browser_sizes[browser][0].split(',').map(Number), position['sizes'][size]);
+                      }
+                  }
+              }
+          }
+          map.addSize([0, 0], []);
 
-        theUnit.defineSizeMapping(map.build());
-
-
-    }
+          theUnit.defineSizeMapping(map.build());
 
 
-    window.addEventListener('resize', function () {
-        var currentWidth = window.innerWidth;
-        if (windowWidth !== currentWidth) {
-            clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(resizer, 500);
-            windowWidth = currentWidth;
-        }
-    });
-
-    /**
-     * @param variable
-     * @returns {boolean}
-     */
-    function checkForUndefined(variable) {
-        if (variable == undefined) {
-            return false;
-        }
-    }
+      }
 
 
-    /**
-     * [resizer description]
-     * @return {[type]} [description]
-     */
-    function resizer() {
-        googletag.pubads().refresh();
-    }
+      window.addEventListener('resize', function () {
+          var currentWidth = window.innerWidth;
+          if (windowWidth !== currentWidth) {
+              clearTimeout(resizeTimer);
+              resizeTimer = setTimeout(resizer, 500);
+              windowWidth = currentWidth;
+          }
+      });
 
-    /**
-     *
-     * @param cname
-     * @param cvalue
-     * @param exdays
-     */
-    function setCookie(cname, cvalue, exdays) {
-        var d = new Date();
-        d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
-        var expires = "expires=" + d.toUTCString();
-        document.cookie = cname + "=" + cvalue + "; " + expires + "; path=/";
-    }
+      /**
+       * @param variable
+       * @returns {boolean}
+       */
+      function checkForUndefined(variable) {
+          if (variable == undefined) {
+              return false;
+          }
+      }
 
-    /**
-     *
-     * @param cname
-     * @returns {*}
-     */
-    function getCookie(cname) {
-        var name = cname + "=";
-        var ca = document.cookie.split(';');
-        for (var i = 0; i < ca.length; i++) {
-            var c = ca[i];
-            while (c.charAt(0) == ' ') c = c.substring(1);
-            if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
-        }
-        return "";
-    }
 
-    /**
-     *
-     * @param name
-     */
-    function deleteCookie(name) {
-        document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/';
-    }
+      /**
+       * [resizer description]
+       * @return {[type]} [description]
+       */
+      function resizer() {
+          googletag.pubads().refresh();
+      }
 
-    // Generates Ad Slots
-    load_ad_positions(dfp_ad_data.positions);
+      /**
+       *
+       * @param cname
+       * @param cvalue
+       * @param exdays
+       */
+      function setCookie(cname, cvalue, exdays) {
+          var d = new Date();
+          d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+          var expires = "expires=" + d.toUTCString();
+          document.cookie = cname + "=" + cvalue + "; " + expires + "; path=/";
+      }
 
-    // Collapse Empty Divs
-    googletag.pubads().collapseEmptyDivs(false);
+      /**
+       *
+       * @param cname
+       * @returns {*}
+       */
+      function getCookie(cname) {
+          var name = cname + "=";
+          var ca = document.cookie.split(';');
+          for (var i = 0; i < ca.length; i++) {
+              var c = ca[i];
+              while (c.charAt(0) == ' ') c = c.substring(1);
+              if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
+          }
+          return "";
+      }
 
-    // Targeting
-    if (jQuery('body.home').length === 0) {
-        set_targeting(dfp_ad_data.page_targeting);
-    } else {
-        set_targeting({"Page":["Home"]});
-    }
+      /**
+       *
+       * @param name
+       */
+      function deleteCookie(name) {
+          document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/';
+      }
 
-    // Asynchronous Loading
-    if (dfp_ad_data.asynch === true) {
-        googletag.pubads().enableAsyncRendering();
-    }
-    // Enable Single Request
-    googletag.pubads().enableSingleRequest();
+      // Generates Ad Slots
+      load_ad_positions(dfp_ad_data.positions);
 
-    // This will be required for header bidding in the future:
-    googletag.pubads().disableInitialLoad();
+      // Collapse Empty Divs
+      googletag.pubads().collapseEmptyDivs();
 
-    // Go
-    googletag.enableServices();
+      // Targeting
+      if (jQuery('body.home').length === 0) {
+          set_targeting(dfp_ad_data.page_targeting);
+      } else {
+          set_targeting({"Page":["Home"]});
+      }
 
-    googletag.pubads().refresh();
+      // Asynchronous Loading
+      if (dfp_ad_data.asynch === true) {
+          googletag.pubads().enableAsyncRendering();
+      }
+      // Enable Single Request
+      googletag.pubads().enableSingleRequest();
 
+      // Go
+      googletag.enableServices();
+
+  });
 });
