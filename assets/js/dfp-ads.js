@@ -96,7 +96,7 @@ var windowWidth = window.innerWidth;
           }
           if (document.getElementById(theId) === null) {
             console.log("deleting " + theId);
-            googletag.destroySlots(thePosition);
+            googletag.destroySlots([thePosition]);
             delete thePosition;
           }
         }
