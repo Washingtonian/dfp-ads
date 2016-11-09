@@ -303,20 +303,6 @@ Class DFP_Ads
     }
 
     /**
-     * Inline scripts
-     *
-     * @since  0.0.1
-     * @access protected
-     *
-     * @return array|string
-     */
-
-    public function inline_dfp_scripts()
-    {
-        echo '<script async="async" src="https://www.googletagservices.com/tag/js/gpt.js"></script><script>var googletag = googletag || {};googletag.cmd = googletag.cmd || [];</script>';
-    }
-
-    /**
      * Display Shortcode
      *
      * @since  0.0.1
