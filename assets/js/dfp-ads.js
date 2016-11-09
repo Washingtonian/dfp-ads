@@ -50,7 +50,7 @@ var dfp_ad_slot_objects = [];
 
 var windowWidth = window.innerWidth;
 
-  googletag.cmd.push(function () {
+googletag.cmd.push(function () {
 
       var resizeTimer;
       // Object from Ajax
@@ -283,12 +283,15 @@ var windowWidth = window.innerWidth;
       googletag.pubads().enableSingleRequest();
       // Go
       googletag.pubads().disableInitialLoad();
+      googletag.pubads().setCentering(true);
 
       jQuery(document).ready(function() {
           destroy_unnecessary_ad_positions();
-          console.log("enabling services");
-          googletag.enableServices();
-          googletag.cmd.push(function(){googletag.pubads().refresh();});
+          googletag.cmd.push(function(){
+            console.log("enabling services");
+            googletag.enableServices();
+            googletag.pubads().refresh();
+          });
       });
 
   });
