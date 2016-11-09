@@ -266,26 +266,6 @@ Class DFP_Ads
     }
 
     /**
-     * Inline scripts
-     *
-     * @access public
-     * @since  0.0.1
-     *
-     * @return mixed
-     */
-    public function inline_scripts()
-    {
-        echo '<script async="async" src="https://www.googletagservices.com/tag/js/gpt.js">
-        </script>
-        <script>
-        var googletag = googletag || {};
-        googletag.cmd = googletag.cmd || [];
-        </script>
-        ';
-
-    }
-
-    /**
      * Registers Scripts. Localizes data to interstitial_ad.js
      *
      * @access public
@@ -312,7 +292,7 @@ Class DFP_Ads
         // wp_enqueue_script($this->google_ad_script_name);
 
         // Add mandatory DFP inline scripts
-        add_action('wp_head','inline_scripts',5);
+        add_action('wp_head','inline_dfp_scripts',5);
 
         // Preps the script
         wp_register_script($this->script_name, $dfp_ads_script_url, [$this->google_ad_script_name, 'jquery'], false, false);
@@ -322,6 +302,19 @@ Class DFP_Ads
         wp_enqueue_script($this->script_name);
     }
 
+    /**
+     * Inline scripts
+     *
+     * @since  0.0.1
+     * @access protected
+     *
+     * @return array|string
+     */
+
+    public function inline_dfp_scripts()
+    {
+        echo '<script async="async" src="https://www.googletagservices.com/tag/js/gpt.js"></script><script>var googletag = googletag || {};googletag.cmd = googletag.cmd || [];</script>';
+    }
 
     /**
      * Display Shortcode
