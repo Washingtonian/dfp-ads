@@ -284,12 +284,12 @@ googletag.cmd.push(function () {
       // Go
       googletag.pubads().disableInitialLoad();
       googletag.pubads().setCentering(true);
+      googletag.enableServices();
 
       jQuery(document).ready(function() {
           destroy_unnecessary_ad_positions();
           googletag.cmd.push(function(){
-            console.log("enabling services");
-            googletag.enableServices();
+            console.log("fetching ads");
             googletag.pubads().refresh();
           });
       });
