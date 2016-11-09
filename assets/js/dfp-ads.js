@@ -42,9 +42,10 @@ var alternate_sizes = [
     ]]
 ];
 
+var dfp_ad_slot_objects = [];
+
 var windowWidth = window.innerWidth;
 
-jQuery(document).ready(function() {
   googletag.cmd.push(function () {
 
       var resizeTimer;
@@ -58,15 +59,6 @@ jQuery(document).ready(function() {
           setCookie("dfp_session_tracker", parseInt(1), 1);
       }
 
-      for (var i = 0; i < dfp_ad_data['positions'].length; i++) {
-          var target = dfp_ad_data['positions'][i]['position_tag'];
-          if (target != null || target != undefined) {
-              if (document.getElementById(target) === null) {
-                  delete dfp_ad_data['positions'][i];
-                }
-          }
-      }
-
       /**
        * Loads Ad Position
        *
@@ -75,14 +67,39 @@ jQuery(document).ready(function() {
       function load_ad_positions(positions) {
           var ad_pos, len;
           // Run through positions
-          for (ad_pos = 0, len = positions.length; ad_pos < len; ++ad_pos) {
-              if (positions[ad_pos] != null) {
-                  var theUnit = define_ad_slot(positions[ad_pos]);
+          for (ad_pos = 0, len = Object.keys(positions).length; ad_pos < len; ++ad_pos) {
+              var thePosition = positions[Object.keys(positions)[ad_pos]];
+              if (thePosition != null) {
+                  var theUnit = define_ad_slot(thePosition);
                   if (theUnit) {
-                    set_size_mappings(theUnit, positions[ad_pos]);
+                    set_size_mappings(theUnit, thePosition);
                   }
+                  dfp_ad_slot_objects[thePosition.position_tag] = theUnit;
               }
           }
+      }
+
+      /**
+       * Looks for Unnecessary Ad Positions and deletes their slots.
+       *
+       */
+
+      function destroy_unnecessary_ad_positions() {
+
+        for (ad_pos = 0, len = Object.keys(dfp_ad_slot_objects).length; ad_pos < len; ++ad_pos) {
+          var thePosition = dfp_ad_slot_objects[Object.keys(dfp_ad_slot_objects)[ad_pos]];
+          try {
+            var theId = thePosition.getSlotElementId();
+          } catch (err) {
+            googletag.destroySlots(thePosition);
+            delete thePosition;
+          }
+          if (document.getElementById(theId) === null) {
+            console.log("deleting " + theId);
+            googletag.destroySlots(thePosition);
+            delete thePosition;
+          }
+        }
       }
 
       /**
@@ -118,7 +135,6 @@ jQuery(document).ready(function() {
           }
           dfp_session_tracker = getCookie('dfp_session_tracker');
           googletag.pubads().setTargeting('pageviews', dfp_session_tracker);
-
       }
 
       /**
@@ -150,7 +166,6 @@ jQuery(document).ready(function() {
               }
           } else {
 
-
               for (var size in position['sizes']) {
 
                   var arrayPosition0 = position['sizes'][size][0];
@@ -173,7 +188,6 @@ jQuery(document).ready(function() {
           map.addSize([0, 0], []);
 
           theUnit.defineSizeMapping(map.build());
-
 
       }
 
@@ -263,8 +277,14 @@ jQuery(document).ready(function() {
       }
       // Enable Single Request
       googletag.pubads().enableSingleRequest();
-
       // Go
-      googletag.enableServices();
+      googletag.pubads().disableInitialLoad();
+
+      jQuery(document).ready(function() {
+          destroy_unnecessary_ad_positions();
+          console.log("enabling services");
+          googletag.enableServices();
+          googletag.pubads().refresh();
+      });
+
   });
-});

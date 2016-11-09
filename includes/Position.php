@@ -190,12 +190,9 @@ class Position
         <div id="<?php _e($this->position_tag, 'dfp-ads'); ?>"
              class="<?php _e($this->position_tag, 'dfp-ads'); ?> <?php _e($this->ad_name, 'dfp-ads'); ?> <?php _e($this->position_class, 'dfp-ads'); ?>">
             <script type='text/javascript'>
-              jQuery(document).ready(function() {
-                  googletag.cmd.push(function () {
-                      googletag.display('<?php _e($this->position_tag, 'dfp-ads'); ?>');
-                  });
+                googletag.cmd.push(function () {
+                    googletag.display('<?php _e($this->position_tag, 'dfp-ads'); ?>');
                 });
-
             </script>
         </div>
         <?php
