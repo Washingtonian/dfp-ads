@@ -287,8 +287,9 @@ Class DFP_Ads
 
         // // Google Ads JS Script
         // wp_register_script($this->google_ad_script_name, $gads_script_url, ['jquery'], false, false);
-        // /* Get the Final Ad Positions */
-        // $ad_positions = apply_filters('pre_dfp_ads_to_js', $this);
+
+        /* Get the Final Ad Positions */
+        $ad_positions = apply_filters('pre_dfp_ads_to_js', $this);
         // wp_enqueue_script($this->google_ad_script_name);
 
         // Add mandatory DFP inline scripts
