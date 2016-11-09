@@ -6,6 +6,10 @@
  * Browser sizes [browser size] [ad size]
  * @type {Array}
  */
+
+var googletag = googletag || {};
+googletag.cmd = googletag.cmd || [];
+
 var browser_sizes = [
     ['200,100', '180,90'],
     ['200,180', '180,150'],
