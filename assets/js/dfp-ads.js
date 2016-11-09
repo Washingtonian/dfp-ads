@@ -45,6 +45,7 @@ var alternate_sizes = [
 var windowWidth = window.innerWidth;
 
 jQuery(document).ready(function() {
+  googletag.cmd.push(function () {
 
       var resizeTimer;
       // Object from Ajax
@@ -265,5 +266,5 @@ jQuery(document).ready(function() {
 
       // Go
       googletag.enableServices();
-
+  });
 });
