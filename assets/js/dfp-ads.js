@@ -83,6 +83,26 @@ googletag.cmd.push(function () {
           }
       }
 
+   /**
+   * Looks for unloaded ad positions and refreshes them.
+   *
+   */
+
+   function load_unloaded_ad_positions() {
+
+     for (ad_pos = 0, len = Object.keys(dfp_ad_slot_objects).length; ad_pos < len; ++ad_pos) {
+       var thePosition = dfp_ad_slot_objects[Object.keys(dfp_ad_slot_objects)[ad_pos]];
+       try {
+         if (thePosition.getResponseInformation() == undefined) {
+           googletag.pubads().refresh([thePosition]);
+          }
+         } catch (err) {
+
+         }
+       }
+     }
+   
+
       /**
        * Looks for Unnecessary Ad Positions and deletes their slots.
        *
@@ -290,7 +310,8 @@ googletag.cmd.push(function () {
           destroy_unnecessary_ad_positions();
           googletag.cmd.push(function(){
             console.log("fetching ads");
-            googletag.pubads().refresh();
+            load_unloaded_ad_positions();
+            setTimeout(load_unloaded_ad_positions,3000);
           });
       });
 
