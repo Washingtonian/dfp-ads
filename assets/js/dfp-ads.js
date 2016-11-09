@@ -45,7 +45,6 @@ var alternate_sizes = [
 var windowWidth = window.innerWidth;
 
 jQuery(document).ready(function() {
-  googletag.cmd.push(function () {
 
       var resizeTimer;
       // Object from Ajax
@@ -62,7 +61,7 @@ jQuery(document).ready(function() {
           var target = dfp_ad_data['positions'][i]['position_tag'];
           if (target != null || target != undefined) {
               if (document.getElementById(target) === null) {
-                  dfp_ad_data['positions'][i] = null;
+                  delete dfp_ad_data['positions'][i];
                 }
           }
       }
@@ -195,6 +194,7 @@ jQuery(document).ready(function() {
           if (variable == undefined) {
               return false;
           }
+          return true;
       }
 
 
@@ -266,5 +266,4 @@ jQuery(document).ready(function() {
       // Go
       googletag.enableServices();
 
-  });
 });
