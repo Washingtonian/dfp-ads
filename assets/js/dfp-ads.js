@@ -284,7 +284,7 @@ var windowWidth = window.innerWidth;
           destroy_unnecessary_ad_positions();
           console.log("enabling services");
           googletag.enableServices();
-          googletag.pubads().refresh();
+          googletag.cmd.push(function(){googletag.pubads().refresh();});
       });
 
   });
