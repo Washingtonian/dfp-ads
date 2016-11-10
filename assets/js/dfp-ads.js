@@ -316,7 +316,7 @@ googletag.cmd.push(function () {
           destroy_unnecessary_ad_positions();
           googletag.cmd.push(function(){
             console.log("fetching ads");
-            load_unloaded_ad_positions();
+            googletag.pubads().refresh(); 
             setInterval(function() {destroy_unnecessary_ad_positions();load_unloaded_ad_positions();},5000);
           });
       });
