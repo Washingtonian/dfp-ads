@@ -311,7 +311,7 @@ googletag.cmd.push(function () {
           googletag.cmd.push(function(){
             console.log("fetching ads");
             load_unloaded_ad_positions();
-            setTimeout(load_unloaded_ad_positions,3000);
+            setInterval(load_unloaded_ad_positions,5000);
           });
       });
 
