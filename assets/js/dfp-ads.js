@@ -95,7 +95,8 @@ googletag.cmd.push(function () {
        var thePosition = dfp_ad_slot_objects[Object.keys(dfp_ad_slot_objects)[ad_pos]];
        try {
          if (thePosition.getResponseInformation() == undefined) {
-           googletag.pubads().refresh(thePosition,{changeCorrelator: false});
+
+           googletag.pubads().refresh([thePosition],{changeCorrelator: false});
           }
          } catch (err) {
 
