@@ -10,6 +10,8 @@
 var googletag = googletag || {};
 googletag.cmd = googletag.cmd || [];
 
+window.dfp_ad_slot_objects = window.dfp_ad_slot_objects || [];
+
 var browser_sizes = [
     ['200,100', '180,90'],
     ['200,180', '180,150'],
@@ -46,8 +48,6 @@ var alternate_sizes = [
     ]]
 ];
 
-var dfp_ad_slot_objects = dfp_ad_slot_objects || [];
-
 var windowWidth = window.innerWidth;
 
 googletag.cmd.push(function () {
@@ -78,7 +78,7 @@ googletag.cmd.push(function () {
                   if (theUnit) {
                     set_size_mappings(theUnit, thePosition);
                   }
-                  dfp_ad_slot_objects[thePosition.position_tag] = theUnit;
+                  window.dfp_ad_slot_objects[thePosition.position_tag] = theUnit;
               }
           }
       }
@@ -91,8 +91,8 @@ googletag.cmd.push(function () {
    function load_unloaded_ad_positions() {
      var ad_pos, len;
 
-     for (ad_pos = 0, len = Object.keys(dfp_ad_slot_objects).length; ad_pos < len; ++ad_pos) {
-       var thePosition = dfp_ad_slot_objects[Object.keys(dfp_ad_slot_objects)[ad_pos]];
+     for (ad_pos = 0, len = Object.keys(window.dfp_ad_slot_objects).length; ad_pos < len; ++ad_pos) {
+       var thePosition = window.dfp_ad_slot_objects[Object.keys(window.dfp_ad_slot_objects)[ad_pos]];
           if (thePosition.getResponseInformation() == undefined) {
            googletag.pubads().refresh([thePosition],{changeCorrelator: false});
           }
@@ -107,9 +107,9 @@ googletag.cmd.push(function () {
 
       function destroy_unnecessary_ad_positions() {
         var ad_pos, len;
-        var dfpKeys=Object.keys(dfp_ad_slot_objects)
+        var dfpKeys=Object.keys(window.dfp_ad_slot_objects)
         for (ad_pos = 0, len = dfpKeys.length; ad_pos < len; ++ad_pos) {
-          var thePosition = dfp_ad_slot_objects[dfpKeys[ad_pos]];
+          var thePosition = window.dfp_ad_slot_objects[dfpKeys[ad_pos]];
           try {
             var theId = thePosition.getSlotElementId();
             if (document.getElementById(theId) === null) {
@@ -117,12 +117,12 @@ googletag.cmd.push(function () {
               if (!googletag.destroySlots([thePosition])) {
                 console.log("couldn't destroySlots");
               };
-              delete dfp_ad_slot_objects[dfpKeys[ad_pos]];
+              delete window.dfp_ad_slot_objects[dfpKeys[ad_pos]];
             }
           } catch (err) {
             console.log("failed to evaluate presence of ad #" + ad_pos + ": " + dfpKeys[ad_pos]);
             // googletag.destroySlots(thePosition);
-            // delete dfp_ad_slot_objects[Object.keys(dfp_ad_slot_objects)[ad_pos]];
+            // delete window.dfp_ad_slot_objects[Object.keys(window.dfp_ad_slot_objects)[ad_pos]];
           }
         }
       }
