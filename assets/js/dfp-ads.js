@@ -110,6 +110,7 @@ googletag.cmd.push(function () {
        */
 
       function destroy_unnecessary_ad_positions() {
+        var ad_pos, len;
 
         for (ad_pos = 0, len = Object.keys(dfp_ad_slot_objects).length; ad_pos < len; ++ad_pos) {
           var thePosition = dfp_ad_slot_objects[Object.keys(dfp_ad_slot_objects)[ad_pos]];
@@ -123,8 +124,9 @@ googletag.cmd.push(function () {
               delete dfp_ad_slot_objects[Object.keys(dfp_ad_slot_objects)[ad_pos]];
             }
           } catch (err) {
-            googletag.destroySlots(thePosition);
-            delete dfp_ad_slot_objects[Object.keys(dfp_ad_slot_objects)[ad_pos]];
+            console.log("yacking out");
+            // googletag.destroySlots(thePosition);
+            // delete dfp_ad_slot_objects[Object.keys(dfp_ad_slot_objects)[ad_pos]];
           }
         }
       }
