@@ -91,17 +91,13 @@ googletag.cmd.push(function () {
    function load_unloaded_ad_positions() {
      var ad_pos, len;
 
-     for (ad_pos = 0, len = Object.keys(dfp_ad_slot_objects).length - 1; ad_pos < len; ++ad_pos) {
+     for (ad_pos = 0, len = Object.keys(dfp_ad_slot_objects).length; ad_pos < len; ++ad_pos) {
        var thePosition = dfp_ad_slot_objects[Object.keys(dfp_ad_slot_objects)[ad_pos]];
-       try {
-         if (thePosition.getResponseInformation() == undefined) {
+          if (thePosition.getResponseInformation() == undefined) {
 
            googletag.pubads().refresh([thePosition],{changeCorrelator: false});
           }
-         } catch (err) {
-
-         }
-       }
+        }
      }
 
 
