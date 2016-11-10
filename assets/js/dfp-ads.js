@@ -46,7 +46,7 @@ var alternate_sizes = [
     ]]
 ];
 
-var dfp_ad_slot_objects = [];
+var dfp_ad_slot_objects = dfp_ad_slot_objects || [];
 
 var windowWidth = window.innerWidth;
 
@@ -94,7 +94,6 @@ googletag.cmd.push(function () {
      for (ad_pos = 0, len = Object.keys(dfp_ad_slot_objects).length; ad_pos < len; ++ad_pos) {
        var thePosition = dfp_ad_slot_objects[Object.keys(dfp_ad_slot_objects)[ad_pos]];
           if (thePosition.getResponseInformation() == undefined) {
-
            googletag.pubads().refresh([thePosition],{changeCorrelator: false});
           }
         }
@@ -121,7 +120,7 @@ googletag.cmd.push(function () {
               delete dfp_ad_slot_objects[Object.keys(dfp_ad_slot_objects)[ad_pos]];
             }
           } catch (err) {
-            console.log("yacking out");
+            console.log("failed to evaluate presence of " + Object.keys(dfp_ad_slot_objects)[ad_pos]);
             // googletag.destroySlots(thePosition);
             // delete dfp_ad_slot_objects[Object.keys(dfp_ad_slot_objects)[ad_pos]];
           }
