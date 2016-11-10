@@ -114,13 +114,13 @@ googletag.cmd.push(function () {
           var thePosition = dfp_ad_slot_objects[Object.keys(dfp_ad_slot_objects)[ad_pos]];
           try {
             var theId = thePosition.getSlotElementId();
+            if (document.getElementById(theId) === null) {
+              console.log("deleting " + theId);
+              googletag.destroySlots([thePosition]);
+              delete dfp_ad_slot_objects[Object.keys(dfp_ad_slot_objects)[ad_pos]];
+            }
           } catch (err) {
             googletag.destroySlots(thePosition);
-            delete dfp_ad_slot_objects[Object.keys(dfp_ad_slot_objects)[ad_pos]];
-          }
-          if (document.getElementById(theId) === null) {
-            console.log("deleting " + theId);
-            googletag.destroySlots([thePosition]);
             delete dfp_ad_slot_objects[Object.keys(dfp_ad_slot_objects)[ad_pos]];
           }
         }
