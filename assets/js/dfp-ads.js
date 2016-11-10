@@ -120,7 +120,7 @@ googletag.cmd.push(function () {
               delete dfp_ad_slot_objects[Object.keys(dfp_ad_slot_objects)[ad_pos]];
             }
           } catch (err) {
-            console.log("failed to evaluate presence of " + Object.keys(dfp_ad_slot_objects)[ad_pos]);
+            console.log("failed to evaluate presence of ad #" + ad_pos + ": " + Object.keys(dfp_ad_slot_objects)[ad_pos]);
             // googletag.destroySlots(thePosition);
             // delete dfp_ad_slot_objects[Object.keys(dfp_ad_slot_objects)[ad_pos]];
           }
