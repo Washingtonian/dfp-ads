@@ -299,8 +299,6 @@ Class DFP_Ads
 
         // Send data to front end.
         wp_localize_script($this->script_name, 'dfp_ad_object', [$ad_positions]);
-        wp_localize_script($this->script_name, 'googletag', "googletag || {}");
-        wp_localize_script($this->script_name, 'googletag.cmd', "googletag.cmd || []");
 
         wp_enqueue_script($this->script_name);
     }

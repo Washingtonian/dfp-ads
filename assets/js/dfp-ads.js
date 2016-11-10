@@ -7,7 +7,7 @@
  * @type {Array}
  */
 
-var googletag = googletag || {};
+googletag = googletag || {};
 googletag.cmd = googletag.cmd || [];
 
 var browser_sizes = [
