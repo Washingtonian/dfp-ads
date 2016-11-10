@@ -107,9 +107,9 @@ googletag.cmd.push(function () {
 
       function destroy_unnecessary_ad_positions() {
         var ad_pos, len;
-
-        for (ad_pos = 0, len = Object.keys(dfp_ad_slot_objects).length; ad_pos < len; ++ad_pos) {
-          var thePosition = dfp_ad_slot_objects[Object.keys(dfp_ad_slot_objects)[ad_pos]];
+        var dfpKeys=Object.keys(dfp_ad_slot_objects)
+        for (ad_pos = 0, len = dfpKeys.length; ad_pos < len; ++ad_pos) {
+          var thePosition = dfp_ad_slot_objects[dfpKeys[ad_pos]];
           try {
             var theId = thePosition.getSlotElementId();
             if (document.getElementById(theId) === null) {
@@ -117,10 +117,10 @@ googletag.cmd.push(function () {
               if (!googletag.destroySlots([thePosition])) {
                 console.log("couldn't destroySlots");
               };
-              delete dfp_ad_slot_objects[Object.keys(dfp_ad_slot_objects)[ad_pos]];
+              delete dfp_ad_slot_objects[dfpKeys[ad_pos]];
             }
           } catch (err) {
-            console.log("failed to evaluate presence of ad #" + ad_pos + ": " + Object.keys(dfp_ad_slot_objects)[ad_pos]);
+            console.log("failed to evaluate presence of ad #" + ad_pos + ": " + dfpKeys[ad_pos]);
             // googletag.destroySlots(thePosition);
             // delete dfp_ad_slot_objects[Object.keys(dfp_ad_slot_objects)[ad_pos]];
           }
