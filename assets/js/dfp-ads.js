@@ -101,7 +101,7 @@ googletag.cmd.push(function () {
          }
        }
      }
-   
+
 
       /**
        * Looks for Unnecessary Ad Positions and deletes their slots.
@@ -311,7 +311,7 @@ googletag.cmd.push(function () {
           googletag.cmd.push(function(){
             console.log("fetching ads");
             load_unloaded_ad_positions();
-            setInterval(load_unloaded_ad_positions,5000);
+            setInterval(function() {destroy_unnecessary_ad_positions();load_unloaded_ad_positions();},5000);
           });
       });
 
