@@ -302,10 +302,16 @@ function dfp_ad_select_options($value)
 function inline_dfp_scripts()
 {
     echo '<script async="async" src="https://www.googletagservices.com/tag/js/gpt.js"></script>';
-    echo '<script>var googletag = googletag || {};googletag.cmd = googletag.cmd || [];';
-    echo 'window.dfp_ad_slot_objects = window.dfp_ad_slot_objects || [];</script>';
-    echo 'googletag.cmd.push(function () {
-          googletag.pubads().disableInitialLoad();
-    });';
+    echo <<<EOD
+      <script>
+      var googletag = googletag || {};
+      googletag.cmd = googletag.cmd || [];
+      window.dfp_ad_slot_objects = window.dfp_ad_slot_objects || [];
+      googletag.cmd.push(function () {
+        googletag.pubads().disableInitialLoad();
+      });
+      </script>
+
+    EOD;
 
 }
