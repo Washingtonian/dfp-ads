@@ -302,7 +302,7 @@ function dfp_ad_select_options($value)
 function inline_dfp_scripts()
 {
     echo '<script async="async" src="https://www.googletagservices.com/tag/js/gpt.js"></script>';
-    echo <<<EOD
+    echo '
       <script>
       var googletag = googletag || {};
       googletag.cmd = googletag.cmd || [];
@@ -312,6 +312,6 @@ function inline_dfp_scripts()
       });
       </script>
 
-    EOD;
+    ';
 
 }
