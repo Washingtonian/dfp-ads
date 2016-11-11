@@ -54,6 +54,7 @@ googletag.cmd.push(function () {
       googletag.pubads().disableInitialLoad();
 });
 
+googletag.cmd.push(function () {
 
       var resizeTimer;
       // Object from Ajax
