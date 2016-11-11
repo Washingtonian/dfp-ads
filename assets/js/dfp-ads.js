@@ -100,8 +100,9 @@ googletag.cmd.push(function () {
             reloaders.push(thePosition);
           }
         }
-        googletag.pubads().refresh(reloaders,{changeCorrelator: false});
-
+        if (reloaders.length > 0) {
+          googletag.pubads().refresh(reloaders,{changeCorrelator: false});
+        }
       }
 
 
