@@ -57,47 +57,52 @@ googletag.cmd.push(function () {
       var dfp_ad_data = dfp_ad_object[0],
           acct_id = dfp_ad_data.account_id;
 
+      googletag.pubads().disableInitialLoad();
+
       if (getCookie('dfp_session_tracker') && parseInt(getCookie('dfp_session_tracker')) < 10) {
           setCookie("dfp_session_tracker", parseInt(getCookie('dfp_session_tracker')) + parseInt(1), 1);
       } else {
           setCookie("dfp_session_tracker", parseInt(1), 1);
       }
 
-      /**
-       * Loads Ad Position
-       *
-       * @param {Array} positions - Array of ad positions
-       */
-      function load_ad_positions(positions) {
-          var ad_pos, len;
-          // Run through positions
-          for (ad_pos = 0, len = Object.keys(positions).length; ad_pos < len; ++ad_pos) {
-              var thePosition = positions[Object.keys(positions)[ad_pos]];
-              if (thePosition != null) {
-                  var theUnit = define_ad_slot(thePosition);
-                  if (theUnit) {
-                    set_size_mappings(theUnit, thePosition);
-                  }
-                  window.dfp_ad_slot_objects[thePosition.position_tag] = theUnit;
-              }
-          }
-      }
+    /**
+     * Loads Ad Position
+     *
+     * @param {Array} positions - Array of ad positions
+     */
+    function load_ad_positions(positions) {
+        var ad_pos, len;
+        // Run through positions
+        for (ad_pos = 0, len = Object.keys(positions).length; ad_pos < len; ++ad_pos) {
+            var thePosition = positions[Object.keys(positions)[ad_pos]];
+            if (thePosition != null) {
+                var theUnit = define_ad_slot(thePosition);
+                if (theUnit) {
+                  set_size_mappings(theUnit, thePosition);
+                }
+                window.dfp_ad_slot_objects[thePosition.position_tag] = theUnit;
+            }
+        }
+    }
 
-   /**
-   * Looks for unloaded ad positions and refreshes them.
-   *
-   */
+     /**
+     * Looks for unloaded ad positions and refreshes them.
+     *
+     */
 
-   function load_unloaded_ad_positions() {
-     var ad_pos, len;
+     function load_unloaded_ad_positions() {
+       var ad_pos, len;
+       var reloaders=[];
 
-     for (ad_pos = 0, len = Object.keys(window.dfp_ad_slot_objects).length; ad_pos < len; ++ad_pos) {
-       var thePosition = window.dfp_ad_slot_objects[Object.keys(window.dfp_ad_slot_objects)[ad_pos]];
-          if (thePosition.getResponseInformation() == undefined) {
-           googletag.pubads().refresh([thePosition],{changeCorrelator: false});
+       for (ad_pos = 0, len = Object.keys(window.dfp_ad_slot_objects).length; ad_pos < len; ++ad_pos) {
+         var thePosition = window.dfp_ad_slot_objects[Object.keys(window.dfp_ad_slot_objects)[ad_pos]];
+         if (thePosition.getResponseInformation() == undefined) {
+            reloaders.push(thePosition);
           }
         }
-     }
+        googletag.pubads().refresh(reloaders,{changeCorrelator: false});
+
+      }
 
 
       /**
@@ -291,7 +296,7 @@ googletag.cmd.push(function () {
       load_ad_positions(dfp_ad_data.positions);
 
       // Collapse Empty Divs
-      googletag.pubads().collapseEmptyDivs();
+      // googletag.pubads().collapseEmptyDivs();
 
       // Targeting
       if (jQuery('body.home').length === 0) {
