@@ -301,5 +301,11 @@ function dfp_ad_select_options($value)
 
 function inline_dfp_scripts()
 {
-    echo '<script async="async" src="https://www.googletagservices.com/tag/js/gpt.js"></script><script>var googletag = googletag || {};googletag.cmd = googletag.cmd || [];window.dfp_ad_slot_objects = window.dfp_ad_slot_objects || [];</script>';
+    echo '<script async="async" src="https://www.googletagservices.com/tag/js/gpt.js"></script>';
+    echo '<script>var googletag = googletag || {};googletag.cmd = googletag.cmd || [];';
+    echo 'window.dfp_ad_slot_objects = window.dfp_ad_slot_objects || [];</script>';
+    echo 'googletag.cmd.push(function () {
+          googletag.pubads().disableInitialLoad();
+    });';
+
 }

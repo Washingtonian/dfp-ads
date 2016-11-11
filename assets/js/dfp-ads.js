@@ -51,10 +51,6 @@ var alternate_sizes = [
 var windowWidth = window.innerWidth;
 
 googletag.cmd.push(function () {
-      googletag.pubads().disableInitialLoad();
-});
-
-googletag.cmd.push(function () {
 
       var resizeTimer;
       // Object from Ajax
