@@ -317,9 +317,16 @@ googletag.cmd.push(function () {
       jQuery(document).ready(function() {
         console.log("document ready");
           destroy_unnecessary_ad_positions();
-          console.log("fetching ads");
-          googletag.pubads().refresh();
+
           setInterval(function() {destroy_unnecessary_ad_positions();load_unloaded_ad_positions();},5000);
       });
 
+  });
+
+  jQuery(document).ready(function() {
+
+    googletag.cmd.push(function() {
+        console.log("fetching ads");
+        googletag.pubads().refresh();
+    } ) ;
   });
