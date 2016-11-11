@@ -127,8 +127,6 @@ googletag.cmd.push(function () {
             }
           } catch (err) {
             console.log("failed to evaluate presence of ad #" + ad_pos + ": " + dfpKeys[ad_pos]);
-            // googletag.destroySlots(thePosition);
-            // delete window.dfp_ad_slot_objects[Object.keys(window.dfp_ad_slot_objects)[ad_pos]];
           }
         }
       }
@@ -319,10 +317,8 @@ googletag.cmd.push(function () {
       jQuery(document).ready(function() {
         console.log("document ready");
           destroy_unnecessary_ad_positions();
-          googletag.cmd.push(function(){
-            console.log("fetching ads");
-            googletag.pubads().refresh();
-          });
+          console.log("fetching ads");
+          googletag.pubads().refresh();
           setInterval(function() {destroy_unnecessary_ad_positions();load_unloaded_ad_positions();},5000);
       });
 
