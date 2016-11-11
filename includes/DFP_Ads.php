@@ -212,7 +212,7 @@ Class DFP_Ads
             }
 
         }
-        $string = mb_strimwidth(implode($array), 0, 40, "");
+        $string = mb_strimwidth(implode(",", $array), 0, 40, "");
         return (count($array) < 1 ? ['Home'] : $string);
     }
 
@@ -237,7 +237,7 @@ Class DFP_Ads
             }
         }
 
-        $string = mb_strimwidth(implode($targets), 0, 40, "");
+        $string = mb_strimwidth(implode(",", $targets), 0, 40, "");
         return (count($targets) < 1 ? '' : $string);
     }
 
@@ -263,7 +263,7 @@ Class DFP_Ads
             }
         }
 
-        $string = mb_strimwidth(implode($targets), 0, 40, "");
+        $string = mb_strimwidth(implode(",", $targets), 0, 40, "");
         return (count($targets) < 1 ? '' : $string);
     }
 
