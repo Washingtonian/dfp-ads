@@ -295,6 +295,7 @@ Class DFP_Ads
 
         // Add mandatory DFP inline scripts
         add_action('wp_head','inline_dfp_scripts',5);
+        add_action('wp_footer','inline_dfp_footer_scripts',100);
 
         // Preps the script
         wp_register_script($this->script_name, $dfp_ads_script_url, ['jquery'], false, false);

@@ -315,3 +315,27 @@ function inline_dfp_scripts()
     ';
 
 }
+
+
+
+/**
+ * Inline DFP footer scripts
+ *
+ * @since  0.0.1
+ * @access protected
+ *
+ * @return array|string
+ */
+
+function inline_dfp_footer_scripts()
+{
+    echo '<script>
+    jQuery(document).ready(function() {
+
+    googletag.cmd.push(function() {
+        console.log("fetching ads");
+        googletag.pubads().refresh();
+    } ) ;
+  });
+  </script>';
+}

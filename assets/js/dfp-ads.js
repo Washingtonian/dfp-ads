@@ -322,11 +322,3 @@ googletag.cmd.push(function () {
       });
 
   });
-
-  jQuery(document).ready(function() {
-
-    googletag.cmd.push(function() {
-        console.log("fetching ads");
-        googletag.pubads().refresh();
-    } ) ;
-  });
