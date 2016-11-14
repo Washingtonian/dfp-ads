@@ -331,11 +331,12 @@ function inline_dfp_footer_scripts()
 {
     echo '<script>
     jQuery(document).ready(function() {
-
-    googletag.cmd.push(function() {
-        console.log("fetching ads");
-        googletag.pubads().refresh();
-    } ) ;
-  });
+      if (!window.headerBiddingEnabled) {
+        googletag.cmd.push(function() {
+            console.log("fetching ads");
+            googletag.pubads().refresh();
+        } ) ;
+      };
+    });
   </script>';
 }
