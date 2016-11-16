@@ -62,6 +62,16 @@ Class DFP_Ads
      */
     public $dir_uri;
 
+
+    /**
+     * Setting for whether header bidding is enabled thru Prebid.js
+     *
+     * @since  0.3.1
+     * @access public
+     * @var bool $headerbidding
+     */
+    public $headerbidding;
+
     /**
      * Ad Positions - Array
      *
@@ -140,6 +150,26 @@ Class DFP_Ads
         $this->asynch = ($val == 'on' ? false : true);
 
         return (isset($this->asynch) ? $this->asynch : false);
+    }
+
+
+    /**
+     * Set Header Bidding (prebid.js)
+     *
+     * By default, the setting is off
+     *
+     * @since  0.3.1
+     * @access public
+     *
+     * @param string $val
+     *
+     * @return bool
+     */
+    public function set_header_bidding($val)
+    {
+        $this->headerbidding = ($val == 'on' ? false : true);
+
+        return (isset($this->headerbidding) ? $this->headerbidding : false);
     }
 
 

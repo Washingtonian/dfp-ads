@@ -67,6 +67,8 @@ $dfp_ads          = new DFP_Ads();
 $dfp_ads->dir_uri = plugins_url(null, __FILE__);
 $dfp_ads->set_account_id(dfp_get_settings_value('dfp_property_code'));
 $dfp_ads->set_asynchronous_loading(dfp_get_settings_value('dfp_synchronous_tags'));
+$dfp_ads->set_header_bidding(dfp_get_settings_value('dfp_prebidjs_header_bidding'));
+
 /*
  * Enqueues the styles and scripts into WordPress. When this action runs
  * it also will grab all of the positions and other filtered in information
@@ -166,6 +168,15 @@ if (is_admin()) {
 			'section'     => 'general_settings',
 			'description' => '<em>DFP Ad Manager uses asynchronous tags by default. Choose this option if
 								your site is unable to support DoubleClick\'s asynchronous tags</em>',
+		];
+
+		$fields['dfp_prebidjs_header_bidding'] = [
+			'id'          => 'dfp_prebidjs_header_bidding',
+			'field'       => 'checkbox',
+			'callback'    => 'checkbox',
+			'title'       => 'Use Header Bidding (prebid.js)',
+			'section'     => 'general_settings',
+			'description' => '<em>Enable header bidding through prebid.js</em>',
 		];
 
 		return $fields;
