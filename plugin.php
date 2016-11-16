@@ -139,6 +139,15 @@ add_filter(DFP_Ads_Post_Type::FIELDS_FILTER, (function ($fields) {
  * Use it to filter in additional custom positions, targetting data, etc.
  */
 add_filter('pre_dfp_ads_to_js', [$dfp_ads, 'send_ads_to_js'], 1);
+
+/**
+ * This filter is run before the header bidding details are sent to javascript. It is
+ * the time when additional data can be dumped in and sent to front-end scripts.
+ *
+ * Use it to filter in additional custom positions, targetting data, etc.
+ */
+add_filter('pre_dfp_header_bidding_to_js', [$dfp_ads, 'send_header_bidding_to_js'], 1);
+
 /* Settings/Import Page */
 if (is_admin()) {
 	/* Section headings */
@@ -169,7 +178,6 @@ if (is_admin()) {
 			'description' => '<em>DFP Ad Manager uses asynchronous tags by default. Choose this option if
 								your site is unable to support DoubleClick\'s asynchronous tags</em>',
 		];
-
 		$fields['dfp_prebidjs_header_bidding'] = [
 			'id'          => 'dfp_prebidjs_header_bidding',
 			'field'       => 'checkbox',

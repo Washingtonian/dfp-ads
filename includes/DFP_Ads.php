@@ -62,7 +62,6 @@ Class DFP_Ads
      */
     public $dir_uri;
 
-
     /**
      * Setting for whether header bidding is enabled thru Prebid.js
      *
@@ -167,7 +166,7 @@ Class DFP_Ads
      */
     public function set_header_bidding($val)
     {
-        $this->headerbidding = ($val == 'on' ? false : true);
+        $this->headerbidding = ($val == 'on' ? true : false);
 
         return (isset($this->headerbidding) ? $this->headerbidding : false);
     }
@@ -191,6 +190,53 @@ Class DFP_Ads
         return $object;
     }
 
+
+    /**
+     * @param DFP_Ads $dfp_ads
+     *
+     * @return DFP_Ads
+     */
+    public function send_header_bidding_to_js($dfp_ads)
+    {
+        // Copy the original
+        $params = clone $this;
+        $params->positions   = dfp_get_ad_positions();
+        // $object = [];
+        $object = [];
+
+        if ($params->headerbidding == false) {
+          return [];
+
+        }
+        foreach ($params->positions as $pos) {
+          if ($pos->post_id)  {
+            $enabled = get_field("header_bidding_enabled",$pos->post_id);
+
+            if ($enabled) {
+              $thisunit = [];
+              $thisunit['code'] = $pos->position_tag;
+              $thisunit['sizes'] = $pos->sizes;
+              $bids = get_field("bidders",$pos->post_id)[0];
+              if (array_key_exists('params',$bids)) {
+                foreach ($bids[params] as $param) {
+                  $bids['newparams'][ $param['name'] ] = $param['value'];
+                  // unset ($bids->['params']->['param']);
+                  // unset ($bids->params[$param]);
+                }
+                unset($bids['params']);
+                $bids['params']=$bids['newparams'];
+                unset($bids['newparams']);
+
+              } else {
+              }
+              $thisunit['bids'] = $bids;
+              array_push($object, $thisunit);
+            }
+          }
+        }
+
+        return $object;
+    }
 
     /**
      * Sets all ad targeting
@@ -322,6 +368,7 @@ Class DFP_Ads
         /* Get the Final Ad Positions */
         $ad_positions = apply_filters('pre_dfp_ads_to_js', $this);
         // wp_enqueue_script($this->google_ad_script_name);
+        $header_bidding_params = apply_filters('pre_dfp_header_bidding_to_js', $this);
 
         // Add mandatory DFP inline scripts
         add_action('wp_head','inline_dfp_scripts',5);
@@ -332,6 +379,7 @@ Class DFP_Ads
 
         // Send data to front end.
         wp_localize_script($this->script_name, 'dfp_ad_object', [$ad_positions]);
+        wp_localize_script($this->script_name, 'header_bidding_params', [$header_bidding_params]);
 
         wp_enqueue_script($this->script_name);
     }
