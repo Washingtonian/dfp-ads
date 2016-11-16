@@ -221,7 +221,7 @@ Class DFP_Ads
                 foreach ($bids[params] as $param) {
                   $bids['newparams'][ $param['name'] ] = $param['value'];
                   // unset ($bids->['params']->['param']);
-                  // unset ($bids->params[$param]);
+                  // unset ($bids->params[$param]); // why no workie
                 }
                 unset($bids['params']);
                 $bids['params']=$bids['newparams'];
@@ -380,7 +380,7 @@ Class DFP_Ads
         // Send data to front end.
         wp_localize_script($this->script_name, 'dfp_ad_object', [$ad_positions]);
         wp_localize_script($this->script_name, 'header_bidding_params', [$header_bidding_params]);
-
+        wp_localize_script($this->script_name, 'headerBiddingEnabled', true);
         wp_enqueue_script($this->script_name);
     }
 

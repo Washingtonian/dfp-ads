@@ -311,6 +311,50 @@ function inline_dfp_scripts()
         googletag.pubads().disableInitialLoad();
       });
       </script>
+      <script src="/wp-content/plugins/dfp-ads/assets/js/prebid_20161114221710.js"></script>
+      <script>
+      var PREBID_TIMEOUT = 700;
+      var pbjs = pbjs || {};
+      pbjs.que = pbjs.que || [];
+      if (window.headerBiddingEnabled && header_bidding_params) {
+        pbjs.que.push(function() {
+
+        pbjs.addAdUnits(header_bidding_params);
+        pbjs.requestBids({
+          // This callback gets triggered when all bids for this
+          // ad unit come back.
+          bidsBackHandler: function(bidResponses) {
+              var targetingParams = pbjs.getAdserverTargeting();
+              console.log(JSON.stringify(targetingParams));
+          }
+        });
+
+        });
+      }
+
+         pbjs.que.push(function() {
+             pbjs.addAdUnits(adUnits);
+             pbjs.requestBids({
+                 bidsBackHandler: sendAdserverRequest
+             });
+         });
+
+         function sendAdserverRequest() {
+             if (pbjs.adserverRequestSent) return;
+             pbjs.adserverRequestSent = true;
+             googletag.cmd.push(function() {
+                 pbjs.que.push(function() {
+                     pbjs.setTargetingForGPTAsync();
+                     googletag.pubads().refresh();
+                 });
+             });
+         }
+
+         setTimeout(function() {
+             sendAdserverRequest();
+         }, PREBID_TIMEOUT);
+
+      </script>
 
     ';
 
