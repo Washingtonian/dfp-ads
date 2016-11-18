@@ -95,6 +95,56 @@ Class DFP_Ads
         'Tag'      => [],
     ];
 
+    /**
+     * Defines minimum browser sizes for each ad size
+     *
+     * @access public
+     * @since  0.0.1
+     *
+     * @var array
+     */
+    public $browser_sizes = [
+        ['200,100', '180,90'],
+        ['200,180', '180,150'],
+        ['220,220', '200,200'],
+        ['300,200', '245,155'],
+        ['320,400', '300,250'],
+        ['320,100', '320,50'],
+        ['320,150', '320,100'],
+        ['340,400', '336,280'],
+        ['320,800', '300,600'],
+        ['400,700', '160,600'],
+        ['500,200', '468,60'],
+        ['500,600', '240,400'],
+        ['650,350', '600,300'],
+        ['740,250', '728,90'],
+        ['990,250', '970,250'],
+        ['1,1', '1,1']
+    ];
+
+    /**
+     * Defines which ad sizes should be unrolled into multiple sizes
+     *
+     * @access public
+     * @since  0.0.1
+     *
+     * @var array
+     */
+    public $alternate_sizes = [
+        ['300,600', [
+            [300, 600],
+            [300, 250]
+        ]],
+        ['600,300', [
+            [600, 300],
+            [300, 250]
+        ]],
+        ['970,250', [
+            [970, 250],
+            [728, 90],
+            [970, 90]
+        ]]
+    ];
 
     /**
      * PHP5 Constructor
@@ -216,6 +266,42 @@ Class DFP_Ads
               $thisunit = [];
               $thisunit['code'] = $pos->position_tag;
               $thisunit['sizes'] = $pos->sizes;
+              $sizeArray = $pos->sizes;
+              if (! is_array($sizeArray[0])) {
+                  $sizeArray = [ $sizeArray ] ;
+              }
+              $mappingsArray = dfp_swap_size_mapping_array($this->browser_sizes);
+
+              $thisunit['sizeMapping'] = [];
+              $thisunit['debug']=$mappingsArray;
+              foreach ($sizeArray as $size) {
+
+                  foreach ($mappingsArray as $prospect) {
+                    $thisunit['debug-size'] = dfp_pixels_to_string($size);
+                    $thisunit['debug-prospect-key'] = $prospect[0];
+                    $thisunit['debug-prospect-value'] = $prospect[1];
+
+                      if (dfp_pixels_to_string($size)==$prospect[0]) {
+                          $browser_size = dfp_pixels_to_array($prospect[1]);
+                          $key["minWidth"]=$browser_size[0];
+                          $key["sizes"]=[];
+                          array_push($key["sizes"],$size);
+                          foreach ($this->alternate_sizes as $alternate) {
+                              if (dfp_pixels_to_string($size) == $alternate[0]) {
+                                foreach ($alternate[1] as $newSize) {
+                                  if (in_array($newSize,$sizeArray)) {
+                                    array_push($key["sizes"],$newSize);
+                                  }
+                                }
+                              }
+                            }
+                          // This fails on multidim arrays.
+                          // $key["sizes"] = array_unique ($key["sizes"]);
+                          array_push($thisunit['sizeMapping'],$key);
+                      }
+                  }
+              }
+
               $bids = get_field("bids",$pos->post_id);
               $thisunit['bids'] = [];
               foreach ($bids as $bid) {
@@ -389,6 +475,9 @@ Class DFP_Ads
         wp_localize_script($this->script_name, 'dfp_ad_object', [$ad_positions]);
         wp_localize_script($this->script_name, 'header_bidding_params', $header_bidding_params);
         wp_localize_script($this->script_name, 'headerBiddingEnabled', $this->headerbidding);
+        wp_localize_script($this->script_name, 'browser_sizes', $this->browser_sizes);
+        wp_localize_script($this->script_name, 'alternate_sizes', $this->alternate_sizes);
+
         wp_enqueue_script($this->script_name);
     }
 

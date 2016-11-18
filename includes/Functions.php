@@ -319,25 +319,12 @@ function inline_dfp_scripts()
           googletag.pubads().disableInitialLoad();
         });
         pbjs.que.push(function() {
+            pbjs.setPriceGranularity("dense");
 
-        pbjs.addAdUnits(header_bidding_params);
-        pbjs.requestBids({
-          // This callback gets triggered when all bids for this
-          // ad unit come back.
-          bidsBackHandler: function(bidResponses) {
-              var targetingParams = pbjs.getAdserverTargeting();
-              // console.log(JSON.stringify(targetingParams));
-          }
-        });
-
-        });
-
-
-         pbjs.que.push(function() {
-             pbjs.addAdUnits(header_bidding_params);
-             pbjs.requestBids({
+            pbjs.addAdUnits(header_bidding_params);
+            pbjs.requestBids({
                  bidsBackHandler: sendAdserverRequest
-             });
+            });
          });
 
          function sendAdserverRequest() {
@@ -351,17 +338,13 @@ function inline_dfp_scripts()
              });
          }
 
-         setTimeout(function() {
-             sendAdserverRequest();
-         }, PREBID_TIMEOUT);
+         setTimeout(sendAdserverRequest, PREBID_TIMEOUT);
       }
       </script>
 
     ';
 
 }
-
-
 
 /**
  * Inline DFP footer scripts
@@ -384,4 +367,65 @@ function inline_dfp_footer_scripts()
       };
     });
   </script>';
+}
+
+
+/**
+ * Swap Size Mapping Array
+ *
+ * @TODO  Add Labels
+ *
+ * @since 0.0.1
+ *
+ * @param $array array
+ */
+function dfp_swap_size_mapping_array($array)
+{
+  $newarray = [];
+  foreach ($array as $item) {
+    $scratch = $item[0];
+    $item[0] = $item[1];
+    $item[1] = $scratch;
+    array_push($newarray,$item);
+  }
+  return $newarray;
+}
+
+
+/**
+ * Turn an array-based pixel dimension into a string
+ *
+ * @TODO  Add Labels
+ *
+ * @since 0.0.1
+ *
+ * @param $array array
+ */
+function dfp_pixels_to_string($array)
+{
+  return implode(",",$array);
+}
+
+
+/**
+ * Turn a string pixel dimension into an array
+ *
+ * @TODO  Add Labels
+ *
+ * @since 0.0.1
+ *
+ * @param $array array
+ */
+function dfp_pixels_to_array($string)
+{
+    if (strpos($string, "x") && ! strpos($string, "[")) {
+      $string = preg_replace("/,/","DELIM",$string);
+      $string = preg_replace("/x/",",",$string);
+      $string = preg_replace("/DELIM/",'],[',$string);
+      $string = '[' . $string . ']';
+    }
+    if (substr_count($string, "[") < substr_count($string, ",") )  {
+      $string = "[" . $string . "]";
+    }
+    return json_decode($string);
 }
