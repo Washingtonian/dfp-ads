@@ -325,7 +325,7 @@ function inline_dfp_scripts()
           // ad unit come back.
           bidsBackHandler: function(bidResponses) {
               var targetingParams = pbjs.getAdserverTargeting();
-              console.log(JSON.stringify(targetingParams));
+              // console.log(JSON.stringify(targetingParams));
           }
         });
 
@@ -333,7 +333,7 @@ function inline_dfp_scripts()
       }
 
          pbjs.que.push(function() {
-             pbjs.addAdUnits(adUnits);
+             pbjs.addAdUnits(header_bidding_params);
              pbjs.requestBids({
                  bidsBackHandler: sendAdserverRequest
              });
