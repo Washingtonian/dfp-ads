@@ -119,14 +119,20 @@ googletag.cmd.push(function () {
           try {
             var theId = thePosition.getSlotElementId();
             if (document.getElementById(theId) === null) {
-              console.log("deleting " + theId);
+              if (window.dfpAdsDebug) {
+                console.log("deleting " + theId);
+              }
               if (!googletag.destroySlots([thePosition])) {
-                console.log("couldn't destroySlots");
+                if (window.dfpAdsDebug) {
+                  console.log("couldn't destroySlots");
+                }
               };
               delete window.dfp_ad_slot_objects[dfpKeys[ad_pos]];
             }
           } catch (err) {
-            console.log("failed to evaluate presence of ad #" + ad_pos + ": " + dfpKeys[ad_pos]);
+            if (window.dfpAdsDebug) {
+              console.log("failed to evaluate presence of ad #" + ad_pos + ": " + dfpKeys[ad_pos]);
+            }
           }
         }
       }
@@ -149,10 +155,14 @@ googletag.cmd.push(function () {
                         position.sizes,
                         position.position_tag
                     ).addService(googletag.pubads());
-                    console.log("defined slot " + position.ad_name + " in " + position.position_tag);
+                    if (window.dfpAdsDebug) {
+                      console.log("defined slot " + position.ad_name + " in " + position.position_tag);
+                    }
             } catch(err) {
-              console.log("error defining ad slot ");
-              console.log(position);
+              if (window.dfpAdsDebug) {
+                console.log("error defining ad slot ");
+                console.log(position);
+              }
             }
           }
       }
@@ -315,9 +325,10 @@ googletag.cmd.push(function () {
       googletag.enableServices();
 
       jQuery(document).ready(function() {
-        console.log("document ready");
+          if (window.dfpAdsDebug) {
+            console.log("document ready");
+          }
           destroy_unnecessary_ad_positions();
-
           setInterval(function() {destroy_unnecessary_ad_positions();load_unloaded_ad_positions();},5000);
       });
 
