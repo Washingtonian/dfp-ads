@@ -333,7 +333,9 @@ function inline_dfp_footer_scripts()
     jQuery(document).ready(function() {
       if (!window.headerBiddingEnabled) {
         googletag.cmd.push(function() {
-            console.log("fetching ads");
+            if (window.dfpAdsDebug) {
+              console.log("fetching ads");
+            }
             googletag.pubads().refresh();
         } ) ;
       };
