@@ -235,11 +235,9 @@ Class DFP_Ads
                   unset($bid['params']);
                   $bid['params']=$bid['newparams'];
                   unset($bid['newparams']);
-
                 }
                 array_push($thisunit['bids'], $bid);
               }
-
               array_push($object, $thisunit);
             }
           }
@@ -390,7 +388,7 @@ Class DFP_Ads
         // Send data to front end.
         wp_localize_script($this->script_name, 'dfp_ad_object', [$ad_positions]);
         wp_localize_script($this->script_name, 'header_bidding_params', $header_bidding_params);
-        wp_localize_script($this->script_name, 'headerBiddingEnabled', true);
+        wp_localize_script($this->script_name, 'headerBiddingEnabled', $this->headerbidding);
         wp_enqueue_script($this->script_name);
     }
 

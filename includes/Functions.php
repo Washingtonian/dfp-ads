@@ -307,16 +307,17 @@ function inline_dfp_scripts()
       var googletag = googletag || {};
       googletag.cmd = googletag.cmd || [];
       window.dfp_ad_slot_objects = window.dfp_ad_slot_objects || [];
-      googletag.cmd.push(function () {
-        googletag.pubads().disableInitialLoad();
-      });
+
       </script>
       <script src="/wp-content/plugins/dfp-ads/assets/js/prebid_20161114221710.js"></script>
       <script>
       var PREBID_TIMEOUT = 700;
       var pbjs = pbjs || {};
       pbjs.que = pbjs.que || [];
-      if (window.headerBiddingEnabled && header_bidding_params) {
+      if (window.headerBiddingEnabled===true && header_bidding_params) {
+        googletag.cmd.push(function () {
+          googletag.pubads().disableInitialLoad();
+        });
         pbjs.que.push(function() {
 
         pbjs.addAdUnits(header_bidding_params);
@@ -330,7 +331,7 @@ function inline_dfp_scripts()
         });
 
         });
-      }
+
 
          pbjs.que.push(function() {
              pbjs.addAdUnits(header_bidding_params);
@@ -353,7 +354,7 @@ function inline_dfp_scripts()
          setTimeout(function() {
              sendAdserverRequest();
          }, PREBID_TIMEOUT);
-
+      }
       </script>
 
     ';
@@ -375,7 +376,7 @@ function inline_dfp_footer_scripts()
 {
     echo '<script>
     jQuery(document).ready(function() {
-      if (!window.headerBiddingEnabled) {
+      if (window.headerBiddingEnabled !== true) {
         googletag.cmd.push(function() {
             console.log("fetching ads");
             googletag.pubads().refresh();
