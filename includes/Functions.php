@@ -309,7 +309,7 @@ function inline_dfp_scripts()
       window.dfp_ad_slot_objects = window.dfp_ad_slot_objects || [];
 
       </script>
-      <script src="/wp-content/plugins/dfp-ads/assets/js/prebid_20161114221710.js"></script>
+      <script src="/wp-content/plugins/dfp-ads/assets/js/prebid-1479853050.js"></script>
       <script>
       var PREBID_TIMEOUT = 700;
       var pbjs = pbjs || {};
@@ -317,6 +317,7 @@ function inline_dfp_scripts()
       if (window.headerBiddingEnabled===true && header_bidding_params) {
         googletag.cmd.push(function () {
           googletag.pubads().disableInitialLoad();
+          googletag.pubads().setTargeting("hb_active","true");
         });
         pbjs.que.push(function() {
             pbjs.setPriceGranularity("dense");
