@@ -307,16 +307,45 @@ function inline_dfp_scripts()
       var googletag = googletag || {};
       googletag.cmd = googletag.cmd || [];
       window.dfp_ad_slot_objects = window.dfp_ad_slot_objects || [];
-      googletag.cmd.push(function () {
-        googletag.pubads().disableInitialLoad();
-      });
+
+      </script>
+      <script src="/wp-content/plugins/dfp-ads/assets/js/prebid-1479853050.js"></script>
+      <script>
+      var PREBID_TIMEOUT = 700;
+      var pbjs = pbjs || {};
+      pbjs.que = pbjs.que || [];
+      if (window.headerBiddingEnabled===true && header_bidding_params) {
+        googletag.cmd.push(function () {
+          googletag.pubads().disableInitialLoad();
+          googletag.pubads().setTargeting("hb_active","true");
+        });
+        pbjs.que.push(function() {
+            pbjs.setPriceGranularity("dense");
+
+            pbjs.addAdUnits(header_bidding_params);
+            pbjs.requestBids({
+                 bidsBackHandler: sendAdserverRequest
+            });
+         });
+
+         function sendAdserverRequest() {
+             if (pbjs.adserverRequestSent) return;
+             pbjs.adserverRequestSent = true;
+             googletag.cmd.push(function() {
+                 pbjs.que.push(function() {
+                     pbjs.setTargetingForGPTAsync();
+                     googletag.pubads().refresh();
+                 });
+             });
+         }
+
+         setTimeout(sendAdserverRequest, PREBID_TIMEOUT);
+      }
       </script>
 
     ';
 
 }
-
-
 
 /**
  * Inline DFP footer scripts
@@ -331,7 +360,7 @@ function inline_dfp_footer_scripts()
 {
     echo '<script>
     jQuery(document).ready(function() {
-      if (!window.headerBiddingEnabled) {
+      if (window.headerBiddingEnabled !== true) {
         googletag.cmd.push(function() {
             if (window.dfpAdsDebug) {
               console.log("fetching ads");
@@ -341,4 +370,65 @@ function inline_dfp_footer_scripts()
       };
     });
   </script>';
+}
+
+
+/**
+ * Swap Size Mapping Array
+ *
+ * @TODO  Add Labels
+ *
+ * @since 0.0.1
+ *
+ * @param $array array
+ */
+function dfp_swap_size_mapping_array($array)
+{
+  $newarray = [];
+  foreach ($array as $item) {
+    $scratch = $item[0];
+    $item[0] = $item[1];
+    $item[1] = $scratch;
+    array_push($newarray,$item);
+  }
+  return $newarray;
+}
+
+
+/**
+ * Turn an array-based pixel dimension into a string
+ *
+ * @TODO  Add Labels
+ *
+ * @since 0.0.1
+ *
+ * @param $array array
+ */
+function dfp_pixels_to_string($array)
+{
+  return implode(",",$array);
+}
+
+
+/**
+ * Turn a string pixel dimension into an array
+ *
+ * @TODO  Add Labels
+ *
+ * @since 0.0.1
+ *
+ * @param $array array
+ */
+function dfp_pixels_to_array($string)
+{
+    if (strpos($string, "x") && ! strpos($string, "[")) {
+      $string = preg_replace("/,/","DELIM",$string);
+      $string = preg_replace("/x/",",",$string);
+      $string = preg_replace("/DELIM/",'],[',$string);
+      $string = '[' . $string . ']';
+    }
+    if (substr_count($string, "[") < substr_count($string, ",") )  {
+      $string = "[" . $string . "]";
+    }
+    return json_decode($string);
 }
