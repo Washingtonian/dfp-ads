@@ -311,7 +311,7 @@ function inline_dfp_scripts()
       </script>
       <script src="/wp-content/plugins/dfp-ads/assets/js/prebid-1479853050.js"></script>
       <script>
-      var PREBID_TIMEOUT = 700;
+      var PREBID_TIMEOUT = 1250;
       var pbjs = pbjs || {};
       pbjs.que = pbjs.que || [];
       if (window.headerBiddingEnabled===true && header_bidding_params) {
