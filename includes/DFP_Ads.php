@@ -273,13 +273,13 @@ Class DFP_Ads
               $mappingsArray = dfp_swap_size_mapping_array($this->browser_sizes);
 
               $thisunit['sizeMapping'] = [];
-              $thisunit['debug']=$mappingsArray;
+              // $thisunit['debug']=$mappingsArray;
               foreach ($sizeArray as $size) {
 
                   foreach ($mappingsArray as $prospect) {
-                    $thisunit['debug-size'] = dfp_pixels_to_string($size);
-                    $thisunit['debug-prospect-key'] = $prospect[0];
-                    $thisunit['debug-prospect-value'] = $prospect[1];
+                    // $thisunit['debug-size'] = dfp_pixels_to_string($size);
+                    // $thisunit['debug-prospect-key'] = $prospect[0];
+                    // $thisunit['debug-prospect-value'] = $prospect[1];
 
                       if (dfp_pixels_to_string($size)==$prospect[0]) {
                           $browser_size = dfp_pixels_to_array($prospect[1]);
@@ -474,7 +474,7 @@ Class DFP_Ads
         // Send data to front end.
         wp_localize_script($this->script_name, 'dfp_ad_object', [$ad_positions]);
         wp_localize_script($this->script_name, 'header_bidding_params', $header_bidding_params);
-        wp_localize_script($this->script_name, 'headerBiddingEnabled', $this->headerbidding);
+        wp_localize_script($this->script_name, 'headerBiddingEnabled', [$this->headerbidding]);
         wp_localize_script($this->script_name, 'browser_sizes', $this->browser_sizes);
         wp_localize_script($this->script_name, 'alternate_sizes', $this->alternate_sizes);
 
