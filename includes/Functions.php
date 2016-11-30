@@ -301,14 +301,25 @@ function dfp_ad_select_options($value)
 
 function inline_dfp_scripts()
 {
-    echo '<script async="async" src="https://www.googletagservices.com/tag/js/gpt.js"></script>';
     echo '
+
+      <!-- Google Publisher Tag -->
+
+      <script async="async" src="https://www.googletagservices.com/tag/js/gpt.js"></script>
+    
       <script>
       var googletag = googletag || {};
       googletag.cmd = googletag.cmd || [];
       window.dfp_ad_slot_objects = window.dfp_ad_slot_objects || [];
 
       </script>
+
+      <!-- Sovrn -->
+
+      <script src="https://ap.lijit.com/www/sovrn_beacon_standalone/sovrn_standalone_beacon.js?iid=13396608&amp;uid=washingtonian" id="sBeacon"></script>
+
+      <!-- prebid.js main -->
+
       <script src="/wp-content/plugins/dfp-ads/assets/js/prebid-1479853050.js"></script>
       <script>
       var PREBID_TIMEOUT = 1250;
