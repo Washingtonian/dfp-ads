@@ -314,32 +314,34 @@ function inline_dfp_scripts()
       var PREBID_TIMEOUT = 1250;
       var pbjs = pbjs || {};
       pbjs.que = pbjs.que || [];
-      if (window.headerBiddingEnabled===true && header_bidding_params) {
-        googletag.cmd.push(function () {
-          googletag.pubads().disableInitialLoad();
-          googletag.pubads().setTargeting("hb_active","true");
-        });
-        pbjs.que.push(function() {
-            pbjs.setPriceGranularity("dense");
+      if (typeof(window.headerBiddingEnabled)=="object"){
+        if (window.headerBiddingEnabled[0]==="1" && header_bidding_params) {
+          googletag.cmd.push(function () {
+            googletag.pubads().disableInitialLoad();
+            googletag.pubads().setTargeting("hb_active","true");
+          });
+          pbjs.que.push(function() {
+              pbjs.setPriceGranularity("dense");
 
-            pbjs.addAdUnits(header_bidding_params);
-            pbjs.requestBids({
-                 bidsBackHandler: sendAdserverRequest
-            });
-         });
+              pbjs.addAdUnits(header_bidding_params);
+              pbjs.requestBids({
+                   bidsBackHandler: sendAdserverRequest
+              });
+           });
 
-         function sendAdserverRequest() {
-             if (pbjs.adserverRequestSent) return;
-             pbjs.adserverRequestSent = true;
-             googletag.cmd.push(function() {
-                 pbjs.que.push(function() {
-                     pbjs.setTargetingForGPTAsync();
-                     googletag.pubads().refresh();
-                 });
-             });
-         }
+           function sendAdserverRequest() {
+               if (pbjs.adserverRequestSent) return;
+               pbjs.adserverRequestSent = true;
+               googletag.cmd.push(function() {
+                   pbjs.que.push(function() {
+                       pbjs.setTargetingForGPTAsync();
+                       googletag.pubads().refresh();
+                   });
+               });
+           }
 
-         setTimeout(sendAdserverRequest, PREBID_TIMEOUT);
+           setTimeout(sendAdserverRequest, PREBID_TIMEOUT);
+        }
       }
       </script>
 
@@ -360,13 +362,15 @@ function inline_dfp_footer_scripts()
 {
     echo '<script>
     jQuery(document).ready(function() {
-      if (window.headerBiddingEnabled !== true) {
-        googletag.cmd.push(function() {
-            if (window.dfpAdsDebug) {
-              console.log("fetching ads");
-            }
-            googletag.pubads().refresh();
-        } ) ;
+      if (typeof(window.headerBiddingEnabled) !== "object"){
+        if (window.headerBiddingEnabled[0] !== "1") {
+          googletag.cmd.push(function() {
+              if (window.dfpAdsDebug) {
+                console.log("fetching ads");
+              }
+              googletag.pubads().refresh();
+          } ) ;
+        }
       };
     });
   </script>';
