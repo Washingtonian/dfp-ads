@@ -306,7 +306,7 @@ function inline_dfp_scripts()
       <!-- Google Publisher Tag -->
 
       <script async="async" src="https://www.googletagservices.com/tag/js/gpt.js"></script>
-    
+
       <script>
       var googletag = googletag || {};
       googletag.cmd = googletag.cmd || [];
@@ -320,7 +320,7 @@ function inline_dfp_scripts()
 
       <!-- prebid.js main -->
 
-      <script src="/wp-content/plugins/dfp-ads/assets/js/prebid-1480983682.min.js"></script>
+      <script src="/wp-content/plugins/dfp-ads/assets/js/prebid-1480984395.js"></script>
       <script>
       var PREBID_TIMEOUT = 1250;
       var pbjs = pbjs || {};
