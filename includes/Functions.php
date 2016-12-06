@@ -320,7 +320,7 @@ function inline_dfp_scripts()
 
       <!-- prebid.js main -->
 
-      <script src="/wp-content/plugins/dfp-ads/assets/js/prebid-1479853050.js"></script>
+      <script src="/wp-content/plugins/dfp-ads/assets/js/prebid-1480983682.min.js"></script>
       <script>
       var PREBID_TIMEOUT = 1250;
       var pbjs = pbjs || {};
