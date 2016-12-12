@@ -372,19 +372,17 @@ function inline_dfp_scripts()
 function inline_dfp_footer_scripts()
 {
     echo '<script>
-    jQuery(document).ready(function() {
-      if (typeof(window.headerBiddingEnabled) !== "object"){
-        if (window.headerBiddingEnabled[0] !== "1") {
-          googletag.cmd.push(function() {
-              if (window.dfpAdsDebug) {
-                console.log("fetching ads");
-              }
-              googletag.pubads().refresh();
-          } ) ;
-        }
-      };
-    });
-  </script>';
+    if (typeof(window.headerBiddingEnabled) !== "object"){
+      if (window.headerBiddingEnabled[0] !== "1") {
+        googletag.cmd.push(function() {
+            if (window.dfpAdsDebug) {
+              console.log("fetching ads");
+            }
+            googletag.pubads().refresh();
+        } ) ;
+      }
+    }; 
+    </script>';
 }
 
 
