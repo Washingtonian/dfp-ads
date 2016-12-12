@@ -316,13 +316,13 @@ function inline_dfp_scripts()
 
       <!-- Sovrn -->
 
-      <script src="https://ap.lijit.com/www/sovrn_beacon_standalone/sovrn_standalone_beacon.js?iid=13396608&amp;uid=washingtonian" id="sBeacon"></script>
+      <script async="async" src="https://ap.lijit.com/www/sovrn_beacon_standalone/sovrn_standalone_beacon.js?iid=13396608&amp;uid=washingtonian" id="sBeacon"></script>
 
       <!-- prebid.js main -->
 
-      <script src="/wp-content/plugins/dfp-ads/assets/js/prebid-1480984395.js"></script>
+      <script async="async" src="/wp-content/plugins/dfp-ads/assets/js/prebid-1480984395.js"></script>
       <script>
-      var PREBID_TIMEOUT = 1250;
+      var PREBID_TIMEOUT = 900;
       var pbjs = pbjs || {};
       pbjs.que = pbjs.que || [];
       if (typeof(window.headerBiddingEnabled)=="object"){
@@ -333,7 +333,6 @@ function inline_dfp_scripts()
           });
           pbjs.que.push(function() {
               pbjs.setPriceGranularity("dense");
-
               pbjs.addAdUnits(header_bidding_params);
               pbjs.requestBids({
                    bidsBackHandler: sendAdserverRequest
@@ -342,15 +341,12 @@ function inline_dfp_scripts()
 
            function sendAdserverRequest() {
                if (pbjs.adserverRequestSent) return;
+               pbjs.setTargetingForGPTAsync();
                pbjs.adserverRequestSent = true;
                googletag.cmd.push(function() {
-                   pbjs.que.push(function() {
-                       pbjs.setTargetingForGPTAsync();
-                       googletag.pubads().refresh();
-                   });
+                 googletag.pubads().refresh();
                });
            }
-
            setTimeout(sendAdserverRequest, PREBID_TIMEOUT);
         }
       }
@@ -381,7 +377,7 @@ function inline_dfp_footer_scripts()
             googletag.pubads().refresh();
         } ) ;
       }
-    }; 
+    };
     </script>';
 }
 
