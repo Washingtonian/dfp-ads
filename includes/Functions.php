@@ -341,9 +341,9 @@ function inline_dfp_scripts()
 
            function sendAdserverRequest() {
                if (pbjs.adserverRequestSent) return;
-               pbjs.setTargetingForGPTAsync();
-               pbjs.adserverRequestSent = true;
                googletag.cmd.push(function() {
+                 pbjs.setTargetingForGPTAsync();
+                 pbjs.adserverRequestSent = true;
                  googletag.pubads().refresh();
                });
            }
