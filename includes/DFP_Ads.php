@@ -383,7 +383,7 @@ Class DFP_Ads
 
         }
         $string = mb_strimwidth(implode(",", $array), 0, 40, "");
-        return (count($array) < 1 ? ['Home'] : $string);
+        return (count($array) < 1 ? 'Home' : $string);
     }
 
 
