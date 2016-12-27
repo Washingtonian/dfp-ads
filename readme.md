@@ -1,6 +1,4 @@
-# DFP Ad Manager
-
-[![Build Status](https://travis-ci.org/ThatGerber/dfp-ads.svg)](https://travis-ci.org/ThatGerber/dfp-ads) [![Code Climate](https://codeclimate.com/github/ThatGerber/dfp-ads/badges/gpa.svg)](https://codeclimate.com/github/ThatGerber/dfp-ads) [![Test Coverage](https://codeclimate.com/github/ThatGerber/dfp-ads/badges/coverage.svg)](https://codeclimate.com/github/ThatGerber/dfp-ads)[![Coverage Status](https://coveralls.io/repos/ThatGerber/dfp-ads/badge.svg?branch=master&service=github)](https://coveralls.io/github/ThatGerber/dfp-ads?branch=master)
+# DFP Ad Manager 
 
 Table of Contents
 
