@@ -363,14 +363,14 @@ function inline_dfp_scripts()
       }
 
       if(ybWidth()>=481){
-              yieldbot.pub('xzn8');//desktop PSN goes here
-              yieldbot.defineSlot('desktop_SB');
-              yieldbot.defineSlot('desktop_REC');
-              yieldbot.defineSlot('desktop_LB');
+              yieldbot.pub("xzn8");//desktop PSN goes here
+              yieldbot.defineSlot("desktop_SB");
+              yieldbot.defineSlot("desktop_REC");
+              yieldbot.defineSlot("desktop_LB");
           }else{
-              yieldbot.pub('t7ms');//mobile PSN goes here
-              yieldbot.defineSlot('mobile_LB');
-              yieldbot.defineSlot('mobile_REC');
+              yieldbot.pub("t7ms");//mobile PSN goes here
+              yieldbot.defineSlot("mobile_LB");
+              yieldbot.defineSlot("mobile_REC");
           }
     ';
 
