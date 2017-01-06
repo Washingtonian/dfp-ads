@@ -354,6 +354,7 @@ function inline_dfp_scripts()
 
       <!-- Yieldbot adaptive  -->
 
+      <script>
       function ybWidth(){
           var w = window,
                   d = document,
@@ -372,6 +373,7 @@ function inline_dfp_scripts()
               yieldbot.defineSlot("mobile_LB");
               yieldbot.defineSlot("mobile_REC");
           }
+      </script>
     ';
 
 }
