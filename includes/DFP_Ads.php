@@ -465,7 +465,7 @@ Class DFP_Ads
         $header_bidding_params = apply_filters('pre_dfp_header_bidding_to_js', $this);
 
         // Add mandatory DFP inline scripts
-        add_action('wp_head','inline_dfp_scripts',5);
+        add_action('wp_head','inline_dfp_scripts',100);
         add_action('wp_footer','inline_dfp_footer_scripts',100);
 
         // Preps the script
