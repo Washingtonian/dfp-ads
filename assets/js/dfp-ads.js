@@ -225,7 +225,7 @@ googletag.cmd.push(function () {
        * @return {[type]} [description]
        */
       function resizer() {
-          googletag.pubads().refresh();
+          // googletag.pubads().refresh();
       }
 
       /**
