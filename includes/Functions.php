@@ -339,9 +339,9 @@ function inline_dfp_scripts()
               });
            });
            pbjs.enableAnalytics({
-                   provider: 'ga',
+                   provider: "ga",
                    options: {
-                       global: '__gaTracker', // <string> name of GA global. Default is 'ga'
+                       global: "__gaTracker", // <string> name of GA global. Default is 'ga'
                        enableDistribution: true,
                    }
                });
