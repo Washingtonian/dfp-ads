@@ -338,7 +338,13 @@ function inline_dfp_scripts()
                    bidsBackHandler: sendAdserverRequest
               });
            });
-
+           pbjs.enableAnalytics({
+                   provider: 'ga',
+                   options: {
+                       global: '__gaTracker', // <string> name of GA global. Default is 'ga'
+                       enableDistribution: true,
+                   }
+               });
            function sendAdserverRequest() {
                if (pbjs.adserverRequestSent) return;
                googletag.cmd.push(function() {
