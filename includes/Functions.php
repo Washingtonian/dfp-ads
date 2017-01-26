@@ -320,7 +320,7 @@ function inline_dfp_scripts()
 
       <!-- prebid.js main -->
 
-      <script async="async" src="/wp-content/plugins/dfp-ads/assets/js/prebid-1482439600.js"></script>
+      <script async="async" src="/wp-content/plugins/dfp-ads/assets/js/prebid-1485469070.js"></script>
       <script>
       var PREBID_TIMEOUT = 1250;
       var pbjs = pbjs || {};
@@ -341,7 +341,7 @@ function inline_dfp_scripts()
            pbjs.enableAnalytics({
                    provider: "ga",
                    options: {
-                       global: "__gaTracker", // <string> name of GA global. 
+                       global: "__gaTracker", // <string> name of GA global.
                        enableDistribution: true,
                    }
                });
