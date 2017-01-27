@@ -332,19 +332,19 @@ function inline_dfp_scripts()
             googletag.pubads().setTargeting("hb_active","true");
           });
           pbjs.que.push(function() {
+              pbjs.enableAnalytics({
+                      provider: "ga",
+                      options: {
+                          global: "__gaTracker", // <string> name of GA global.
+                          enableDistribution: true,
+                      }
+                  });
               pbjs.setPriceGranularity("dense");
               pbjs.addAdUnits(header_bidding_params);
               pbjs.requestBids({
                    bidsBackHandler: sendAdserverRequest
               });
            });
-           pbjs.enableAnalytics({
-                   provider: "ga",
-                   options: {
-                       global: "__gaTracker", // <string> name of GA global.
-                       enableDistribution: true,
-                   }
-               });
            function sendAdserverRequest() {
                if (pbjs.adserverRequestSent) return;
                googletag.cmd.push(function() {
