@@ -29,6 +29,12 @@ googletag.cmd.push(function () {
           setCookie("dfp_session_tracker", parseInt(1), 1);
       }
 
+      var pageConfig = {
+         allowPushExpansion: true,
+      };
+
+      googletag.pubads().setSafeFrameConfig(pageConfig);
+
     /**
      * Loads Ad Position
      *
