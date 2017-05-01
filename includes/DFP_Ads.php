@@ -431,6 +431,12 @@ Class DFP_Ads
                     $targets[] = $tag->name;
                 }
             }
+            $restaurant_lists = get_the_terms($post->ID,"restaurant_lists");
+            if ($restaurant_lists) {
+                foreach ($restaurant_lists as $restaurant_list) {
+                    $targets[] = $restaurant_list->name;
+                }
+            }
         }
 
         $string = mb_strimwidth(implode(",", $targets), 0, 40, "");
