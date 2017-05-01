@@ -426,13 +426,13 @@ Class DFP_Ads
         $targets = [];
         if ($post) {
             $tags = get_the_tags($post->ID);
-            if ($tags) {
+            if (count($tags) > 0) {
                 foreach ($tags as $tag) {
                     $targets[] = $tag->name;
                 }
             }
             $restaurant_lists = get_the_terms($post->ID,"restaurant_lists");
-            if ($restaurant_lists) {
+            if (count($restaurant_lists) > 0) {
                 foreach ($restaurant_lists as $restaurant_list) {
                     $targets[] = $restaurant_list->name;
                 }
