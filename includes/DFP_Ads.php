@@ -91,9 +91,10 @@ Class DFP_Ads
      * @var array
      */
     public $page_targeting = [
-        'Page'     => [],
-        'Category' => [],
-        'Tag'      => [],
+        'Page'       => [],
+        'Category'   => [],
+        'Tag'        => [],
+        'Collection' => [],
     ];
 
     /**
@@ -265,6 +266,8 @@ Class DFP_Ads
         $this->page_targeting['Category'] = $this->get_category_targeting();
         // Tags
         $this->page_targeting['Tag'] = $this->get_tag_targeting();
+
+        $this->page_targeting['Collection'] = $this->get_collections_targeting();
     }
 
 
@@ -362,6 +365,44 @@ Class DFP_Ads
         $string = mb_strimwidth(implode(",", $targets), 0, 40, "");
 
         return (count($targets) < 1 ? '' : $string);
+    }
+
+
+    /**
+     * Gather the collections for each post
+     *
+     * @since  0.0.1
+     * @access protected
+     * @return null|string
+     */
+    protected function get_collections_targeting()
+    {
+        global $post;
+        $targets = [];
+        if ($post) {
+
+            $parents = get_posts([
+                'post_type'  => 'post',
+                'meta_query' => [
+                    [
+                        'key'     => 'collection',
+                        'value'   => '"' . $post->ID . '"',
+                        'compare' => 'LIKE',
+                    ],
+                    'orderby' => 'meta_value_num post_date',
+                    'order'   => 'DESC',
+                ],
+            ]);
+            if (count($parents) > 0) {
+                foreach ($parents as $p) {
+                    $targets[] = $p->post_title;
+
+                }
+            }
+            $string = mb_strimwidth(implode(",", $targets), 0, 40, "");
+
+            return (count($targets) < 1 ? '' : $string);
+        }
     }
 
 
