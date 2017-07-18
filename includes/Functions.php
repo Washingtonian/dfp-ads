@@ -314,10 +314,6 @@ function inline_dfp_scripts()
 
       </script>
 
-      <!-- Sovrn -->
-
-      <script async="async" src="https://ap.lijit.com/www/sovrn_beacon_standalone/sovrn_standalone_beacon.js?iid=13396608&amp;uid=washingtonian" id="sBeacon"></script>
-
       <!-- prebid.js main -->
 
       <script async="async" src="/wp-content/plugins/dfp-ads/assets/js/prebid-1485535861.js"></script>
