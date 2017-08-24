@@ -22,7 +22,7 @@
  * @subpackage        DFP-Ads
  */
 /* Autoload */
-require_once 'vendor/autoload.php';
+require '/home/washingtonian/webroots/vendor/autoload.php';
 /* Includes */
 include 'includes/Functions.php';
 include 'includes/Globals_Container.php';
