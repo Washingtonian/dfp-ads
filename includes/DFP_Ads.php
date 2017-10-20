@@ -324,7 +324,7 @@ Class DFP_Ads
             $categories = get_the_category($post->ID);
             foreach ($categories as $c) {
                 $cat       = get_category($c);
-                $targets[] = $cat->name;
+                $targets[] = preg_replace("/[^A-Za-z0-9 ]/","",html_entity_decode($cat->name));
             }
         }
 
@@ -350,7 +350,7 @@ Class DFP_Ads
             $tags = get_the_tags($post->ID);
             if (is_array($tags) > 0) {
                 foreach ($tags as $tag) {
-                    $targets[] = $tag->name;
+                    $targets[] = preg_replace("/[^A-Za-z0-9 ]/","",html_entity_decode($tag->name));
                 }
             }
 
