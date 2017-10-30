@@ -343,11 +343,17 @@ function inline_dfp_scripts()
            });
            function sendAdserverRequest() {
                if (pbjs.adserverRequestSent) return;
-               googletag.cmd.push(function() {
-                 pbjs.setTargetingForGPTAsync();
-                 pbjs.adserverRequestSent = true;
-                 googletag.pubads().refresh();
-               });
+               if (typeof(window.pbjs)=="object") {
+                   googletag.cmd.push(function() {
+                     pbjs.setTargetingForGPTAsync();
+                     pbjs.adserverRequestSent = true;
+                     googletag.pubads().refresh();
+                   });
+               } else {
+                   googletag.cmd.push(function() {
+                     googletag.pubads().refresh();
+                   });
+               }
            }
            setTimeout(sendAdserverRequest, PREBID_TIMEOUT);
         }
