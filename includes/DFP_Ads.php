@@ -471,7 +471,7 @@ Class DFP_Ads
                     $thisunit['bids'] = [];
                     foreach ($bids as $bid) {
                         if (array_key_exists('params', $bid)) {
-                            foreach ($bid[params] as $param) {
+                            foreach ($bid['params'] as $param) {
                                 if (preg_match("/^[0-9]*$/", $param['value']) === 1) {
                                     $param['value'] = intval($param['value']);
                                 } else {
