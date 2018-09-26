@@ -78,7 +78,11 @@ googletag.cmd.push(function () {
 
     function header_bidding_prebid_enabled() {
       if (dfp_ad_data.header_bidding_prebid_enabled) {
-        return dfp_ad_data.header_bidding_prebid_enabled === "1";
+
+        if (dfp_ad_data.header_bidding_prebid_enabled === "1") {
+          return true;
+        }
+        return dfp_ad_data.header_bidding_prebid_enabled;
       }
       return false;
     }
@@ -90,7 +94,10 @@ googletag.cmd.push(function () {
 
     function header_bidding_amazon_enabled() {
       if (dfp_ad_data.header_bidding_amazon_enabled) {
-        return dfp_ad_data.header_bidding_amazon_enabled === "1";
+        if (dfp_ad_data.header_bidding_amazon_enabled === "1") {
+          return true;
+        }
+        return dfp_ad_data.header_bidding_amazon_enabled;
       }
       return false;
     }
@@ -105,12 +112,12 @@ googletag.cmd.push(function () {
        var ad_pos, len;
        var reloaders=[];
 
-       for (ad_pos = 0, len = Object.keys(window.dfp_ad_slot_objects).length; ad_pos < len; ++ad_pos) {
-         var thePosition = window.dfp_ad_slot_objects[Object.keys(window.dfp_ad_slot_objects)[ad_pos]];
+       window.dfp_ad_slot_objects.forEach(function(thePosition) {
          if (thePosition.getResponseInformation() == undefined) {
+            dfpDebug("This position did not load in time: " + thePosition);
             reloaders.push(thePosition);
           }
-        }
+        });
         if (reloaders.length > 0) {
           googletag.pubads().refresh(reloaders,{changeCorrelator: false});
         }
@@ -200,33 +207,29 @@ googletag.cmd.push(function () {
           }
 
           if (!Array.isArray(position['sizes'][0])) {
-              var arrayPosition0 = position['sizes'][0];
-              var arrayPosition1 = position['sizes'][1];
-              checkForUndefined(arrayPosition0);
               for (var browser in browser_sizes) {
-                  if (browser_sizes[browser][1] == arrayPosition0 + ',' + arrayPosition1) {
+                var sizes = position['sizes'];
+                  if (browser_sizes[browser][1] == sizes[0] + ',' + sizes[1]) {
                       for (var alt_size in alternate_sizes) {
-                          checkForUndefined(alternate_sizes[alt_size]);
-                          if (alternate_sizes[alt_size][0] == arrayPosition0 + ',' + arrayPosition1) {
+                          if (alternate_sizes[alt_size][0] == sizes[0] + ',' + sizes[1]) {
                               map.addSize(browser_sizes[browser][0].split(',').map(Number), alternate_sizes[alt_size][1]);
                           }
                       }
-                      map.addSize(browser_sizes[browser][0].split(',').map(Number), [arrayPosition0, arrayPosition1]);
+                      map.addSize(browser_sizes[browser][0].split(',').map(Number), [sizes[0], sizes[1]]);
                   }
               }
           } else {
 
               for (var size in position['sizes']) {
 
-                  var arrayPosition0 = position['sizes'][size][0];
-                  var arrayPosition1 = position['sizes'][size][1];
+                  var sizes = position['sizes'][size];
                   checkForUndefined(arrayPosition0);
                   for (var browser in browser_sizes) {
                       checkForUndefined(browser_sizes[browser][1]);
-                      if (browser_sizes[browser][1] == arrayPosition0 + ',' + arrayPosition1) {
+                      if (browser_sizes[browser][1] == sizes[0] + ',' + sizes[1]) {
                           for (var alt_size in alternate_sizes) {
                               checkForUndefined(alternate_sizes[alt_size]);
-                              if (alternate_sizes[alt_size][0] == arrayPosition0 + ',' + arrayPosition1) {
+                              if (alternate_sizes[alt_size][0] == sizes[0] + ',' + sizes[1]) {
                                   map.addSize(browser_sizes[browser][0].split(',').map(Number), alternate_sizes[alt_size][1]);
                               }
                           }
@@ -250,18 +253,6 @@ googletag.cmd.push(function () {
               windowWidth = currentWidth;
           }
       });
-
-      /**
-       * @param variable
-       * @returns {boolean}
-       */
-      function checkForUndefined(variable) {
-          if (variable == undefined) {
-              return false;
-          }
-          return true;
-      }
-
 
       /**
        * [resizer description]
@@ -331,13 +322,17 @@ googletag.cmd.push(function () {
       googletag.pubads().setCentering(true);
       googletag.enableServices();
 
-      destroy_unnecessary_ad_positions();
-      if (! header_bidding_prebid_enabled() && ! header_bidding_amazon_enabled()) {
-          googletag.pubads().refresh();
-      }
 
       jQuery(document).ready(function() {
           dfpDebug("document ready");
+          destroy_unnecessary_ad_positions();
+          dfpDebug("Header bidding through Prebid enabled: " + header_bidding_prebid_enabled());
+          dfpDebug("Header bidding through Amazon enabled: " + header_bidding_amazon_enabled());
+
+          if (!(header_bidding_prebid_enabled()) && !(header_bidding_amazon_enabled())) {
+              dfpDebug("No header bidding, so requesting a refresh.");
+              googletag.pubads().refresh();
+          }
           setTimeout(destroy_unnecessary_ad_positions,5000);
           setTimeout(load_unloaded_ad_positions,5000);
       });

@@ -316,6 +316,7 @@ function inline_dfp_header_scripts()
     googletag.cmd = googletag.cmd || [];
     window.dfp_ad_slot_objects = window.dfp_ad_slot_objects || [];
     window.dfp_ready_states = window.dfp_ready_states || [];
+    window.dfpAdsDebug = true;
 
     ';
     if ($hb) {
@@ -337,7 +338,7 @@ function inline_dfp_header_scripts()
                 var PREBID_TIMEOUT = 2000;
                 var pbjs = pbjs || {};
                 pbjs.que = pbjs.que || [];
-                if (header_bidding_prebid_params) {
+                if (window.header_bidding_prebid_params) {
                   pbjs.que.push(function() {
                       pbjs.setPriceGranularity("dense");
                       pbjs.addAdUnits(header_bidding_prebid_params);
