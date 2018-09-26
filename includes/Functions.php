@@ -332,7 +332,7 @@ function inline_dfp_header_scripts()
         echo '
             <!-- prebid.js main -->
 
-            <script async="async" src="/wp-content/plugins/dfp-ads/assets/js/prebid-1515701803.js"></script>
+            <script async="async" src="/wp-content/plugins/dfp-ads/assets/js/prebid0.34.22.js"></script>
             <script>
                 var PREBID_TIMEOUT = 2000;
                 var pbjs = pbjs || {};
