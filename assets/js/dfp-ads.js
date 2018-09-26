@@ -109,6 +109,12 @@ googletag.cmd.push(function () {
      */
 
      function load_unloaded_ad_positions() {
+
+       if (! check_ready_states()) {
+         setTimeout(load_unloaded_ad_positions,1000);
+         return;
+       }
+
        var ad_pos, len;
        var reloaders=[];
 
@@ -296,18 +302,47 @@ googletag.cmd.push(function () {
           document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/';
       }
 
+      function hasClass(ele,cls) {
+           return ele.className.match(new RegExp('(\\s|^)'+cls+'(\\s|$)'));
+      }
+
+      function check_ready_states() {
+        isReady = true;
+        window.dfp_ready_states = window.dfp_ready_states || {};
+
+        if (window.dfp_ready_states == {}) {
+          isReady = false;
+        }
+
+        for (var key in window.dfp_ready_states) {
+          if (window.dfp_ready_states[key] !== true) {
+            isReady = false;
+          }
+        }
+        return isReady;
+      }
+
+      function refresh_when_ready() {
+        isReady = check_ready_states();
+        if (isReady) {
+          googletag.pubads().refresh();
+        } else {
+          setTimeout(refresh_when_ready,50);
+        }
+      }
+
+      // Targeting
+      set_targeting(dfp_ad_data.page_targeting);
+
+      if (hasClass(document.getElementsByTagName("body")[0], "home")) {
+          set_targeting({"Page":["Home"]});
+      }
+
       // Generates Ad Slots
       load_ad_positions(dfp_ad_data.positions);
 
       // Collapse Empty Divs
       // googletag.pubads().collapseEmptyDivs();
-
-      // Targeting
-      if (jQuery('body.home').length === 0) {
-          set_targeting(dfp_ad_data.page_targeting);
-      } else {
-          set_targeting({"Page":["Home"]});
-      }
 
       // Asynchronous Loading
       if (dfp_ad_data.asynch === true) {
@@ -319,17 +354,18 @@ googletag.cmd.push(function () {
       googletag.pubads().setCentering(true);
       googletag.enableServices();
 
-
       jQuery(document).ready(function() {
           dfpDebug("document ready");
           destroy_unnecessary_ad_positions();
+
+          window.dfp_ready_states = window.dfp_ready_states || {};
+          window.dfp_ready_states["gpt"] = true;
+
           dfpDebug("Header bidding through Prebid enabled: " + header_bidding_prebid_enabled());
           dfpDebug("Header bidding through Amazon enabled: " + header_bidding_amazon_enabled());
 
-          if (!(header_bidding_prebid_enabled()) && !(header_bidding_amazon_enabled())) {
-              dfpDebug("No header bidding, so requesting a refresh.");
-              googletag.pubads().refresh();
-          }
+          setTimeout(refresh_when_ready,50);
+
           setTimeout(destroy_unnecessary_ad_positions,5000);
           setTimeout(load_unloaded_ad_positions,5000);
       });

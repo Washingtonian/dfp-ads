@@ -315,8 +315,10 @@ function inline_dfp_header_scripts()
     var googletag = googletag || {};
     googletag.cmd = googletag.cmd || [];
     window.dfp_ad_slot_objects = window.dfp_ad_slot_objects || [];
-    window.dfp_ready_states = window.dfp_ready_states || [];
+    window.dfp_ready_states = window.dfp_ready_states || {};
+    window.dfp_ready_states["gpt"] = false;
     window.dfpAdsDebug = true;
+
 
     ';
     if ($hb) {
@@ -335,9 +337,10 @@ function inline_dfp_header_scripts()
 
             <script async="async" src="/wp-content/plugins/dfp-ads/assets/js/prebid0.34.22.js"></script>
             <script>
-                var PREBID_TIMEOUT = 2000;
+                var PREBID_TIMEOUT = 1000;
                 var pbjs = pbjs || {};
                 pbjs.que = pbjs.que || [];
+                window.dfp_ready_states["prebid"] = false;
                 if (window.header_bidding_prebid_params) {
                   pbjs.que.push(function() {
                       pbjs.setPriceGranularity("dense");
@@ -350,15 +353,12 @@ function inline_dfp_header_scripts()
                    function sendAdserverRequest() {
                        if (pbjs.adserverRequestSent) return;
                        console.log("Bids returned.");
+                       window.dfp_ready_states["prebid"] = true;
                        if (typeof(window.pbjs)=="object") {
                            googletag.cmd.push(function() {
                              pbjs.setTargetingForGPTAsync();
                              pbjs.adserverRequestSent = true;
-                             googletag.pubads().refresh();
-                           });
-                       } else {
-                           googletag.cmd.push(function() {
-                             googletag.pubads().refresh();
+                             console.log("Prebid ready.");
                            });
                        }
                    }
