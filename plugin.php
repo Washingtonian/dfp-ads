@@ -67,7 +67,8 @@ $dfp_ads          = new DFP_Ads();
 $dfp_ads->dir_uri = plugins_url(null, __FILE__);
 $dfp_ads->set_account_id(dfp_get_settings_value('dfp_property_code'));
 $dfp_ads->set_asynchronous_loading(dfp_get_settings_value('dfp_synchronous_tags'));
-$dfp_ads->set_header_bidding(dfp_get_settings_value('dfp_prebidjs_header_bidding'));
+$dfp_ads->set_header_bidding_prebid(dfp_get_settings_value('dfp_header_bidding_prebid_enabled'));
+$dfp_ads->set_header_bidding_amazon(dfp_get_settings_value('dfp_header_bidding_amazon_enabled'));
 
 /*
  * Enqueues the styles and scripts into WordPress. When this action runs
@@ -146,7 +147,10 @@ add_filter('pre_dfp_ads_to_js', [$dfp_ads, 'send_ads_to_js'], 1);
  *
  * Use it to filter in additional custom positions, targetting data, etc.
  */
-add_filter('pre_dfp_header_bidding_to_js', [$dfp_ads, 'send_header_bidding_to_js'], 1);
+add_filter('pre_dfp_header_bidding_prebid_to_js', [$dfp_ads, 'send_header_bidding_prebid_to_js'], 1);
+
+add_filter('pre_dfp_header_bidding_amazon_to_js', [$dfp_ads, 'send_header_bidding_amazon_to_js'], 1);
+
 
 /* Settings/Import Page */
 if (is_admin()) {
@@ -178,13 +182,21 @@ if (is_admin()) {
 			'description' => '<em>DFP Ad Manager uses asynchronous tags by default. Choose this option if
 								your site is unable to support DoubleClick\'s asynchronous tags</em>',
 		];
-		$fields['dfp_prebidjs_header_bidding'] = [
-			'id'          => 'dfp_prebidjs_header_bidding',
+		$fields['dfp_header_bidding_prebid_enabled'] = [
+			'id'          => 'dfp_header_bidding_prebid_enabled',
 			'field'       => 'checkbox',
 			'callback'    => 'checkbox',
 			'title'       => 'Use Header Bidding (prebid.js)',
 			'section'     => 'general_settings',
 			'description' => '<em>Enable header bidding through prebid.js</em>',
+		];
+		$fields['dfp_header_bidding_amazon_enabled'] = [
+			'id'          => 'dfp_header_bidding_amazon_enabled',
+			'field'       => 'checkbox',
+			'callback'    => 'checkbox',
+			'title'       => 'Use Header Bidding (Amazon UAM)',
+			'section'     => 'general_settings',
+			'description' => '<em>Enable header bidding through Amazon UAM</em>',
 		];
 
 		return $fields;

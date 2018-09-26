@@ -2,10 +2,24 @@
  * Javascript for Google Ads
  *
  **/
+
+
 /**
  * Browser sizes [browser size] [ad size]
  * @type {Array}
  */
+
+
+/**
+* Debug some text.
+*
+*/
+
+function dfpDebug(text) {
+ if (window.dfpAdsDebug) {
+   console.log(text);
+ }
+}
 
 var googletag = googletag || {};
 googletag.cmd = googletag.cmd || [];
@@ -54,6 +68,33 @@ googletag.cmd.push(function () {
             }
         }
     }
+
+
+
+     /**
+     * Is Prebid enabled?
+     *
+     */
+
+    function header_bidding_prebid_enabled() {
+      if (dfp_ad_data.header_bidding_prebid_enabled) {
+        return dfp_ad_data.header_bidding_prebid_enabled === "1";
+      }
+      return false;
+    }
+
+     /**
+     * Is Amazon UAM enabled?
+     *
+     */
+
+    function header_bidding_amazon_enabled() {
+      if (dfp_ad_data.header_bidding_amazon_enabled) {
+        return dfp_ad_data.header_bidding_amazon_enabled === "1";
+      }
+      return false;
+    }
+
 
      /**
      * Looks for unloaded ad positions and refreshes them.
@@ -125,14 +166,10 @@ googletag.cmd.push(function () {
                         position.sizes,
                         position.position_tag
                     ).addService(googletag.pubads());
-                    if (window.dfpAdsDebug) {
-                      console.log("defined slot " + position.ad_name + " in " + position.position_tag);
-                    }
+                    dfpDebug("defined slot " + position.ad_name + " in " + position.position_tag);
             } catch(err) {
-              if (window.dfpAdsDebug) {
-                console.log("error defining ad slot ");
-                console.log(position);
-              }
+              dfpDebug("error defining ad slot ");
+              dfpDebug(position);
             }
           }
       }
@@ -294,12 +331,15 @@ googletag.cmd.push(function () {
       googletag.pubads().setCentering(true);
       googletag.enableServices();
 
+      destroy_unnecessary_ad_positions();
+      if (! header_bidding_prebid_enabled() && ! header_bidding_amazon_enabled()) {
+          googletag.pubads().refresh();
+      }
+
       jQuery(document).ready(function() {
-          if (window.dfpAdsDebug) {
-            console.log("document ready");
-          }
-          destroy_unnecessary_ad_positions();
-          setInterval(function() {destroy_unnecessary_ad_positions();load_unloaded_ad_positions();},5000);
+          dfpDebug("document ready");
+          setTimeout(destroy_unnecessary_ad_positions,5000);
+          setTimeout(load_unloaded_ad_positions,5000);
       });
 
   });

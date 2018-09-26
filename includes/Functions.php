@@ -299,67 +299,77 @@ function dfp_ad_select_options($value)
  * @return array|string
  */
 
-function inline_dfp_scripts()
+function inline_dfp_header_scripts()
 {
+
+    $prebid = dfp_get_settings_value('dfp_header_bidding_prebid_enabled');
+    $amazon = dfp_get_settings_value('dfp_header_bidding_amazon_enabled');
+    $hb = $prebid || $amazon;
+
     echo '
+    <!-- Google Publisher Tag -->
 
-      <!-- Google Publisher Tag -->
+    <script async="async" src="https://www.googletagservices.com/tag/js/gpt.js"></script>
 
-      <script async="async" src="https://www.googletagservices.com/tag/js/gpt.js"></script>
+    <script>
+    var googletag = googletag || {};
+    googletag.cmd = googletag.cmd || [];
+    window.dfp_ad_slot_objects = window.dfp_ad_slot_objects || [];
+    window.dfp_ready_states = window.dfp_ready_states || [];
 
-      <script>
-      var googletag = googletag || {};
-      googletag.cmd = googletag.cmd || [];
-      window.dfp_ad_slot_objects = window.dfp_ad_slot_objects || [];
-
-      </script>
-
-      <!-- prebid.js main -->
-
-      <script async="async" src="/wp-content/plugins/dfp-ads/assets/js/prebid0.34.22.js"></script>
-      <script>
-      var PREBID_TIMEOUT = 2000;
-      var pbjs = pbjs || {};
-      pbjs.que = pbjs.que || [];
-      if (typeof(window.headerBiddingEnabled)=="object"){
-        if (window.headerBiddingEnabled[0]==="1" && header_bidding_params) {
+    ';
+    if ($hb) {
+        echo '
           googletag.cmd.push(function () {
             googletag.pubads().disableInitialLoad();
             googletag.pubads().setTargeting("hb_active","true");
           });
-          pbjs.que.push(function() {
-              // pbjs.enableAnalytics({
-              //         provider: "ga",
-              //         options: {
-              //             global: "__gaTracker", // <string> name of GA global.
-              //             enableDistribution: true,
-              //         }
-              //     });
-              pbjs.setPriceGranularity("dense");
-              pbjs.addAdUnits(header_bidding_params);
-              pbjs.requestBids({
-                   bidsBackHandler: sendAdserverRequest
-              });
-           });
-           function sendAdserverRequest() {
-               if (pbjs.adserverRequestSent) return;
-               if (typeof(window.pbjs)=="object") {
-                   googletag.cmd.push(function() {
-                     pbjs.setTargetingForGPTAsync();
-                     pbjs.adserverRequestSent = true;
-                     googletag.pubads().refresh();
+        ';
+    }
+    echo ' </script>';
+
+    if ($prebid) {
+        echo '
+            <!-- prebid.js main -->
+
+            <script async="async" src="/wp-content/plugins/dfp-ads/assets/js/prebid-1515701803.js"></script>
+            <script>
+                var PREBID_TIMEOUT = 2000;
+                var pbjs = pbjs || {};
+                pbjs.que = pbjs.que || [];
+                if (header_bidding_prebid_params) {
+                  pbjs.que.push(function() {
+                      pbjs.setPriceGranularity("dense");
+                      pbjs.addAdUnits(header_bidding_prebid_params);
+                      console.log("Requesting bids.");
+                      pbjs.requestBids({
+                           bidsBackHandler: sendAdserverRequest
+                      });
                    });
-               } else {
-                   googletag.cmd.push(function() {
-                     googletag.pubads().refresh();
-                   });
-               }
-           }
-           setTimeout(sendAdserverRequest, PREBID_TIMEOUT);
-        }
-      }
-      </script>
-    ';
+                   function sendAdserverRequest() {
+                       if (pbjs.adserverRequestSent) return;
+                       console.log("Bids returned.");
+                       if (typeof(window.pbjs)=="object") {
+                           googletag.cmd.push(function() {
+                             pbjs.setTargetingForGPTAsync();
+                             pbjs.adserverRequestSent = true;
+                             googletag.pubads().refresh();
+                           });
+                       } else {
+                           googletag.cmd.push(function() {
+                             googletag.pubads().refresh();
+                           });
+                       }
+                   }
+                   setTimeout(sendAdserverRequest, PREBID_TIMEOUT);
+                } else {
+                    console.log("No header_bidding_prebid_params.");
+                }
+            </script>
+        ';
+
+
+    }
 
 }
 
@@ -374,18 +384,21 @@ function inline_dfp_scripts()
 
 function inline_dfp_footer_scripts()
 {
-    echo '<script>
-    if (typeof(window.headerBiddingEnabled) !== "object"){
-      if (window.headerBiddingEnabled[0] !== "1") {
-        googletag.cmd.push(function() {
-            if (window.dfpAdsDebug) {
-              console.log("fetching ads");
-            }
-            googletag.pubads().refresh();
-        } ) ;
-      }
-    };
-    </script>';
+    $prebid = dfp_get_settings_value('dfp_header_bidding_prebid_enabled');
+    $amazon = dfp_get_settings_value('dfp_header_bidding_amazon_enabled');
+    $hb = $prebid || $amazon;
+        // echo '<script>
+        // if (typeof(window.headerBiddingPrebidEnabled) !== "object"){
+        //   if (window.headerBiddingPrebidEnabled[0] !== "1") {
+        //     googletag.cmd.push(function() {
+        //         if (window.dfpAdsDebug) {
+        //           console.log("fetching ads");
+        //         }
+        //         googletag.pubads().refresh();
+        //     } ) ;
+        //   }
+        // };
+        // </script>';
 }
 
 
