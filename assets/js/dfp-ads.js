@@ -223,12 +223,9 @@ googletag.cmd.push(function () {
               for (var size in position['sizes']) {
 
                   var sizes = position['sizes'][size];
-                  checkForUndefined(arrayPosition0);
                   for (var browser in browser_sizes) {
-                      checkForUndefined(browser_sizes[browser][1]);
                       if (browser_sizes[browser][1] == sizes[0] + ',' + sizes[1]) {
                           for (var alt_size in alternate_sizes) {
-                              checkForUndefined(alternate_sizes[alt_size]);
                               if (alternate_sizes[alt_size][0] == sizes[0] + ',' + sizes[1]) {
                                   map.addSize(browser_sizes[browser][0].split(',').map(Number), alternate_sizes[alt_size][1]);
                               }
