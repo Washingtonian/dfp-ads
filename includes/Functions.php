@@ -386,19 +386,22 @@ function inline_dfp_header_scripts()
         <script>
         apstag.init({
              pubID: "' . $amazon_publisher_id . '",
-             adServer: "googletag"
+             adServer: "googletag",
+             simplerGPT: true
         });
         if (window.header_bidding_amazon_params) {
             window.dfp_ready_states["amazon"] = false;
             window.header_bidding_amazon_params["timeout"] = 1000;
-            dfpDebug("Amazon requesting bids.");
-            apstag.fetchBids(window.header_bidding_amazon_params, function(bids) {
-                dfpDebug("Amazon bids returned.");
-                googletag.cmd.push(function(){
-                     apstag.setDisplayBids();
-                     window.dfp_ready_states["amazon"] = true;
-                     dfpDebug("Amazon ready.");
-                } ) ;
+            googletag.cmd.push(function(){
+                dfpDebug("Amazon requesting bids.");
+                apstag.fetchBids(window.header_bidding_amazon_params, function(bids) {
+                    dfpDebug("Amazon bids returned.");
+                    googletag.cmd.push(function(){
+                         apstag.setDisplayBids();
+                         window.dfp_ready_states["amazon"] = true;
+                         dfpDebug("Amazon ready.");
+                    } ) ;
+                } );
             } );
 
         } else {
