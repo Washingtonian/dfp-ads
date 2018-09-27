@@ -382,6 +382,7 @@ function inline_dfp_header_scripts()
         <script>
             !function(a9,a,p,s,t,A,g){if(a[a9])return;function q(c,r){a[a9]._Q.push([c,r])}a[a9]={init:function(){q("i",arguments)},fetchBids:function(){q("f",arguments)},setDisplayBids:function(){},targetingKeys:function(){return[]},_Q:[]};A=p.createElement(s);A.async=!0;A.src=t;g=p.getElementsByTagName(s)[0];g.parentNode.insertBefore(A,g)}("apstag",window,document,"script","//c.amazon-adsystem.com/aax2/apstag.js");
         </script>
+        <script>
         apstag.init({
              pubID: "d87536ec-6e4d-488a-92b6-4a0840adf2e5", //enter your pub ID here as shown above, it must within quotes
              adServer: "googletag"
@@ -402,6 +403,7 @@ function inline_dfp_header_scripts()
         } else {
             dfpDebug("Amazon: No header_bidding_amazon_params.");
         }
+        </script>
         ';
 
     }
