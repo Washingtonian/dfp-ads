@@ -317,7 +317,7 @@ function inline_dfp_header_scripts()
     window.dfp_ad_slot_objects = window.dfp_ad_slot_objects || [];
     window.dfp_ready_states = window.dfp_ready_states || {};
     window.dfp_ready_states["gpt"] = false;
-    window.dfpAdsDebug = true;
+    window.dfpAdsDebug = false;
 
 
     ';
