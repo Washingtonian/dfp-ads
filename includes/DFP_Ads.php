@@ -259,6 +259,27 @@ Class DFP_Ads
     }
 
 
+
+    /**
+     * Set Header Bidding Amazon UAM Publisher ID
+     *
+     * By default, the setting is blank
+     *
+     * @since  0.3.1
+     * @access public
+     *
+     * @param string $val
+     *
+     * @return bool|string
+     */
+    public function set_header_bidding_amazon_publisher_id($val)
+    {
+        $this->header_bidding_amazon_publisher_id = ($val ? $val : false);
+
+        return ($this->header_bidding_amazon_publisher_id);
+    }
+
+
     /**
      * @param DFP_Ads $dfp_ads
      *

@@ -69,6 +69,7 @@ $dfp_ads->set_account_id(dfp_get_settings_value('dfp_property_code'));
 $dfp_ads->set_asynchronous_loading(dfp_get_settings_value('dfp_synchronous_tags'));
 $dfp_ads->set_header_bidding_prebid(dfp_get_settings_value('dfp_header_bidding_prebid_enabled'));
 $dfp_ads->set_header_bidding_amazon(dfp_get_settings_value('dfp_header_bidding_amazon_enabled'));
+$dfp_ads->set_header_bidding_amazon_publisher_id(dfp_get_settings_value('dfp_header_bidding_amazon_publisher_id'));
 
 /*
  * Enqueues the styles and scripts into WordPress. When this action runs
@@ -156,9 +157,17 @@ add_filter('pre_dfp_header_bidding_amazon_to_js', [$dfp_ads, 'send_header_biddin
 if (is_admin()) {
 	/* Section headings */
 	add_filter('dfp_ads_settings_sections', (function ($sections) {
-		$sections['ad_positions'] = [
+		$sections['general_settings'] = [
 			'id'    => 'general_settings',
 			'title' => 'General Settings',
+		];
+		$sections['header_bidding_prebid'] = [
+			'id'    => 'header_bidding_prebid',
+			'title' => 'Header Bidding: Prebid.js',
+		];
+		$sections['header_bidding_amazon'] = [
+			'id'    => 'header_bidding_amazon',
+			'title' => 'Header Bidding: Amazon UAM',
 		];
 
 		return $sections;
@@ -187,7 +196,7 @@ if (is_admin()) {
 			'field'       => 'checkbox',
 			'callback'    => 'checkbox',
 			'title'       => 'Use Header Bidding (prebid.js)',
-			'section'     => 'general_settings',
+			'section'     => 'header_bidding_prebid',
 			'description' => '<em>Enable header bidding through prebid.js</em>',
 		];
 		$fields['dfp_header_bidding_amazon_enabled'] = [
@@ -195,8 +204,16 @@ if (is_admin()) {
 			'field'       => 'checkbox',
 			'callback'    => 'checkbox',
 			'title'       => 'Use Header Bidding (Amazon UAM)',
-			'section'     => 'general_settings',
+			'section'     => 'header_bidding_amazon',
 			'description' => '<em>Enable header bidding through Amazon UAM</em>',
+		];
+		$fields['dfp_header_bidding_amazon_publisher_id']    = [
+			'id'          => 'dfp_header_bidding_amazon_publisher_id',
+			'field'       => 'text',
+			'callback'    => 'text',
+			'title'       => 'Amazon UAM Publisher ID',
+			'section'     => 'header_bidding_amazon',
+			'description' => 'Enter your Amazon UAM publisher ID. Required for Amazon UAM',
 		];
 
 		return $fields;

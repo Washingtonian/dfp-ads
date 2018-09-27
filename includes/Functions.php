@@ -304,6 +304,7 @@ function inline_dfp_header_scripts()
 
     $prebid = dfp_get_settings_value('dfp_header_bidding_prebid_enabled');
     $amazon = dfp_get_settings_value('dfp_header_bidding_amazon_enabled');
+    $amazon_publisher_id = dfp_get_settings_value('dfp_header_bidding_amazon_publisher_id');
     $hb = $prebid || $amazon;
 
     echo '
@@ -377,14 +378,14 @@ function inline_dfp_header_scripts()
 
     }
 
-    if ($amazon) {
+    if ($amazon && $amazon_publisher_id) {
         echo '
         <script>
             !function(a9,a,p,s,t,A,g){if(a[a9])return;function q(c,r){a[a9]._Q.push([c,r])}a[a9]={init:function(){q("i",arguments)},fetchBids:function(){q("f",arguments)},setDisplayBids:function(){},targetingKeys:function(){return[]},_Q:[]};A=p.createElement(s);A.async=!0;A.src=t;g=p.getElementsByTagName(s)[0];g.parentNode.insertBefore(A,g)}("apstag",window,document,"script","//c.amazon-adsystem.com/aax2/apstag.js");
         </script>
         <script>
         apstag.init({
-             pubID: "d87536ec-6e4d-488a-92b6-4a0840adf2e5", //enter your pub ID here as shown above, it must within quotes
+             pubID: "' . $amazon_publisher_id . '",
              adServer: "googletag"
         });
         if (window.header_bidding_amazon_params) {
@@ -425,18 +426,6 @@ function inline_dfp_footer_scripts()
     $prebid = dfp_get_settings_value('dfp_header_bidding_prebid_enabled');
     $amazon = dfp_get_settings_value('dfp_header_bidding_amazon_enabled');
     $hb = $prebid || $amazon;
-        // echo '<script>
-        // if (typeof(window.headerBiddingPrebidEnabled) !== "object"){
-        //   if (window.headerBiddingPrebidEnabled[0] !== "1") {
-        //     googletag.cmd.push(function() {
-        //         if (window.dfpAdsDebug) {
-        //           console.log("fetching ads");
-        //         }
-        //         googletag.pubads().refresh();
-        //     } ) ;
-        //   }
-        // };
-        // </script>';
 }
 
 
