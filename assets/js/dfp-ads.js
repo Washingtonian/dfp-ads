@@ -332,11 +332,13 @@ googletag.cmd.push(function () {
       }
 
       // Targeting
-      set_targeting(dfp_ad_data.page_targeting);
 
       if (hasClass(document.getElementsByTagName("body")[0], "home")) {
-          set_targeting({"Page":["Home"]});
+          set_targeting({"Page":["Home","Homepage"]});
+      } else {
+          set_targeting(dfp_ad_data.page_targeting);
       }
+
 
       // Generates Ad Slots
       load_ad_positions(dfp_ad_data.positions);
