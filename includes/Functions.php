@@ -317,8 +317,13 @@ function inline_dfp_header_scripts()
     window.dfp_ad_slot_objects = window.dfp_ad_slot_objects || [];
     window.dfp_ready_states = window.dfp_ready_states || {};
     window.dfp_ready_states["gpt"] = false;
-    window.dfpAdsDebug = false;
+    window.dfpAdsDebug = true;
 
+    function dfpDebug(text) {
+     if (window.dfpAdsDebug) {
+       console.log(text);
+     }
+    }
 
     ';
     if ($hb) {
@@ -340,37 +345,67 @@ function inline_dfp_header_scripts()
                 var PREBID_TIMEOUT = 1000;
                 var pbjs = pbjs || {};
                 pbjs.que = pbjs.que || [];
-                window.dfp_ready_states["prebid"] = false;
                 if (window.header_bidding_prebid_params) {
+                  window.dfp_ready_states["prebid"] = false;
                   pbjs.que.push(function() {
                       pbjs.setPriceGranularity("dense");
                       pbjs.addAdUnits(header_bidding_prebid_params);
-                      console.log("Requesting bids.");
+                      dfpDebug("Prebid requesting bids.");
                       pbjs.requestBids({
                            bidsBackHandler: sendAdserverRequest
                       });
                    });
                    function sendAdserverRequest() {
                        if (pbjs.adserverRequestSent) return;
-                       console.log("Bids returned.");
-                       window.dfp_ready_states["prebid"] = true;
+                       dfpDebug("Prebid bids returned.");
                        if (typeof(window.pbjs)=="object") {
                            googletag.cmd.push(function() {
                              pbjs.setTargetingForGPTAsync();
                              pbjs.adserverRequestSent = true;
-                             console.log("Prebid ready.");
+                             window.dfp_ready_states["prebid"] = true;
+                             dfpDebug("Prebid ready.");
                            });
                        }
                    }
                    setTimeout(sendAdserverRequest, PREBID_TIMEOUT);
                 } else {
-                    console.log("No header_bidding_prebid_params.");
+                    dfpDebug("Prebid: No header_bidding_prebid_params.");
                 }
             </script>
         ';
 
 
     }
+
+    if ($amazon) {
+        echo '
+        <script>
+            !function(a9,a,p,s,t,A,g){if(a[a9])return;function q(c,r){a[a9]._Q.push([c,r])}a[a9]={init:function(){q("i",arguments)},fetchBids:function(){q("f",arguments)},setDisplayBids:function(){},targetingKeys:function(){return[]},_Q:[]};A=p.createElement(s);A.async=!0;A.src=t;g=p.getElementsByTagName(s)[0];g.parentNode.insertBefore(A,g)}("apstag",window,document,"script","//c.amazon-adsystem.com/aax2/apstag.js");
+        </script>
+        apstag.init({
+             pubID: "d87536ec-6e4d-488a-92b6-4a0840adf2e5", //enter your pub ID here as shown above, it must within quotes
+             adServer: "googletag"
+        });
+        if (window.header_bidding_amazon_params) {
+            window.dfp_ready_states["amazon"] = false;
+            window.header_bidding_amazon_params["timeout"] = 1000;
+            dfpDebug("Amazon requesting bids.");
+            apstag.fetchBids(window.header_bidding_amazon_params, function(bids) {
+                dfpDebug("Amazon bids returned.");
+                googletag.cmd.push(function(){
+                     apstag.setDisplayBids();
+                     window.dfp_ready_states["amazon"] = true;
+                     dfpDebug("Amazon ready.");
+                } ) ;
+            } );
+
+        } else {
+            dfpDebug("Amazon: No header_bidding_amazon_params.");
+        }
+        ';
+
+    }
+
 
 }
 

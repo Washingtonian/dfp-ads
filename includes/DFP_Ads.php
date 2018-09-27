@@ -451,6 +451,20 @@ Class DFP_Ads
         // $object = [];
         $object = [];
         $amazon = $params->header_bidding_amazon_enabled;
+        if ($amazon) {
+            foreach ($params->positions as $pos) {
+                if ($pos->post_id) {
+                    $enabled = get_field("header_bidding_prebid_enabled", $pos->post_id);
+                    if ($enabled) {
+                        $thisunit          = {};
+                        $thisunit['slotID']  = $pos->position_tag;
+                        $thisunit['slotName']  = $pos->ad_name;
+                        $thisunit['sizes'] = $pos->sizes;
+                        array_push($object, $thisunit);
+                    }
+                }
+            }
+        }
 
         return $object;
     }
