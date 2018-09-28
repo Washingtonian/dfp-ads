@@ -478,8 +478,8 @@ Class DFP_Ads
                 if ($pos->post_id) {
                     $enabled = get_field("header_bidding_prebid_enabled", $pos->post_id);
                     if ($enabled) {
-                        $thisunit          = [];
-                        $thisunit['slotID']  = $pos->position_tag;
+                        $thisunit = [];
+                        $thisunit['slotID'] = $pos->position_tag;
                         $thisunit['slotName']  = $pos->ad_name;
                         $thisunit['sizes'] = $pos->sizes;
                         array_push($slots, $thisunit);
@@ -524,7 +524,6 @@ Class DFP_Ads
                         foreach ($sizeArray as $size) {
 
                             foreach ($mappingsArray as $prospect) {
-
                                 if (dfp_pixels_to_string($size) == $prospect[0]) {
                                     $browser_size    = dfp_pixels_to_array($prospect[1]);
                                     $key["minWidth"] = $browser_size[0];

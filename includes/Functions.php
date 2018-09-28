@@ -359,16 +359,21 @@ function inline_dfp_header_scripts()
                    function sendAdserverRequest() {
                        if (pbjs.adserverRequestSent) return;
                        dfpDebug("Prebid bids returned.");
-                       if (typeof(window.pbjs)=="object") {
-                           googletag.cmd.push(function() {
-                             pbjs.setTargetingForGPTAsync();
-                             pbjs.adserverRequestSent = true;
-                             window.dfp_ready_states["prebid"] = true;
-                             dfpDebug("Prebid ready.");
+                       googletag.cmd.push(function() {
+                           pbjs.que.push(function() {
+                                 pbjs.setTargetingForGPTAsync();
+                                 pbjs.adserverRequestSent = true;
+                                 window.dfp_ready_states["prebid"] = true;
+                                 dfpDebug("Prebid ready.");
                            });
-                       }
+                       });
                    }
-                   setTimeout(sendAdserverRequest, PREBID_TIMEOUT);
+                   function prebidTimeout() {
+                       if (pbjs.adserverRequestSent) return;
+                       dfpDebug("Prebid failure, proceeding.");
+                       sendAdserverRequest();
+                   }
+                   setTimeout(prebidTimeout, PREBID_TIMEOUT);
                 } else {
                     dfpDebug("Prebid: No header_bidding_prebid_params.");
                 }
@@ -403,7 +408,13 @@ function inline_dfp_header_scripts()
                     } ) ;
                 } );
             } );
-
+            setTimeout(function() {
+                googletag.cmd.push(function(){
+                    if (window.dfp_ready_states["amazon"]) { return; }
+                    dfpDebug("Amazon failure, proceeding.");
+                    window.dfp_ready_states["amazon"] = true;
+                });
+            }, 1500);
         } else {
             dfpDebug("Amazon: No header_bidding_amazon_params.");
         }

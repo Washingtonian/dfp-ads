@@ -327,6 +327,7 @@ googletag.cmd.push(function() {
   function refresh_when_ready() {
     isReady = check_ready_states();
     if (isReady) {
+        dfpDebug("All ad service clients ready, requesting ads.");
       googletag.pubads().refresh();
     } else {
       setTimeout(refresh_when_ready, 50);
@@ -365,6 +366,7 @@ googletag.cmd.push(function() {
     destroy_unnecessary_ad_positions();
 
     window.dfp_ready_states = window.dfp_ready_states || {};
+    dfpDebug("GPT ready.");
     window.dfp_ready_states["gpt"] = true;
 
     dfpDebug("Header bidding through Prebid enabled: " + header_bidding_prebid_enabled());
