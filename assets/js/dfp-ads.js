@@ -208,44 +208,77 @@ googletag.cmd.push(function() {
    */
   function set_size_mappings(theUnit, position) {
 
-    var map = googletag.sizeMapping();
+    var mapping = googletag.sizeMapping();
+
+    dfpDebug("Considering " + position["position_tag"] + " : " + JSON.stringify(position["sizes"]));
 
     if (position.sizes.includes('fluid')) {
+      dfpDebug("Fluid size, not adding any mappings.");
       return false;
     }
 
+    maps = [];
     if (!Array.isArray(position['sizes'][0])) {
-      for (var browser in browser_sizes) {
-        var sizes = position['sizes'];
-        if (browser_sizes[browser][1] == sizes[0] + ',' + sizes[1]) {
-          for (var alt_size in alternate_sizes) {
-            if (alternate_sizes[alt_size][0] == sizes[0] + ',' + sizes[1]) {
-              map.addSize(browser_sizes[browser][0].split(',').map(Number), alternate_sizes[alt_size][1]);
-            }
-          }
-          map.addSize(browser_sizes[browser][0].split(',').map(Number), [sizes[0], sizes[1]]);
+      position['sizes'] = [position['sizes']];
+    }
+
+    for (var targetAdSizesIndex in position['sizes']) {
+        targetAdSizes = position['sizes'][targetAdSizesIndex];
+        if (!Array.isArray(targetAdSizes[0])) {
+          targetAdSizes = [targetAdSizes];
         }
-      }
-    } else {
 
-      for (var size in position['sizes']) {
+        for (var targetAdSizeIndex in targetAdSizes) {
 
-        var sizes = position['sizes'][size];
-        for (var browser in browser_sizes) {
-          if (browser_sizes[browser][1] == sizes[0] + ',' + sizes[1]) {
-            for (var alt_size in alternate_sizes) {
-              if (alternate_sizes[alt_size][0] == sizes[0] + ',' + sizes[1]) {
-                map.addSize(browser_sizes[browser][0].split(',').map(Number), alternate_sizes[alt_size][1]);
+          targetAdSize = targetAdSizes[targetAdSizeIndex];
+          requiredBrowserSize = browser_sizes[targetAdSize];
+
+          if (typeof(targetAdSize) == "string") {
+            targetAdSize = targetAdSize.split(",").map(Number);
+          } else {
+            targetAdSize = [ targetAdSize ];
+          }
+
+          desiredAdSize = targetAdSize;
+
+          if (targetAdSize in alternate_sizes) {
+            desiredAdSize = alternate_sizes[targetAdSize].map(function(thing) {
+              if (typeof(thing) == "object") {
+                thing = thing[0];
+              }
+              if (typeof(thing) == "string") {
+                return thing.split(",").map(Number);
+              }
+              return [ thing ];
+              } )
+              ;
+          }
+          if (maps.includes(requiredBrowserSize)) {
+            for (var newDesiredAdSize in desiredAdSize) {
+              if (!maps[requiredBrowserSize].includes(desiredAdSize)) {
+                maps[requiredBrowserSize].push(desiredAdSize);
               }
             }
-            map.addSize(browser_sizes[browser][0].split(',').map(Number), position['sizes'][size]);
+          } else {
+            maps[requiredBrowserSize] = desiredAdSize;
           }
         }
-      }
     }
-    map.addSize([0, 0], []);
 
-    theUnit.defineSizeMapping(map.build());
+    mapping.addSize([0,0], []);
+
+    for (var map in maps) {
+        targetAdSizes = maps[map];
+        if ( targetAdSizes.length == 1) {
+          targetAdSizes = targetAdSizes[0];
+        }
+        map = map.split(',').map(Number);
+        dfpDebug("For browsers larger than " + JSON.stringify(map) + ", adding sizes " + JSON.stringify(targetAdSizes));
+
+        mapping.addSize(map, targetAdSizes);
+    }
+
+    theUnit.defineSizeMapping(mapping.build());
 
   }
 
