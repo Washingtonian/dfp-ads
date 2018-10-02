@@ -67,9 +67,12 @@ $dfp_ads          = new DFP_Ads();
 $dfp_ads->dir_uri = plugins_url(null, __FILE__);
 $dfp_ads->set_account_id(dfp_get_settings_value('dfp_property_code'));
 $dfp_ads->set_asynchronous_loading(dfp_get_settings_value('dfp_synchronous_tags'));
+$dfp_ads->set_console_debugging(dfp_get_settings_value('dfp_console_debugging'));
 $dfp_ads->set_header_bidding_prebid(dfp_get_settings_value('dfp_header_bidding_prebid_enabled'));
+$dfp_ads->set_header_bidding_prebid_timeout(dfp_get_settings_value('dfp_header_bidding_prebid_timeout'));
 $dfp_ads->set_header_bidding_amazon(dfp_get_settings_value('dfp_header_bidding_amazon_enabled'));
 $dfp_ads->set_header_bidding_amazon_publisher_id(dfp_get_settings_value('dfp_header_bidding_amazon_publisher_id'));
+$dfp_ads->set_header_bidding_amazon_timeout(dfp_get_settings_value('dfp_header_bidding_amazon_timeout'));
 
 /*
  * Enqueues the styles and scripts into WordPress. When this action runs
@@ -191,6 +194,14 @@ if (is_admin()) {
 			'description' => '<em>DFP Ad Manager uses asynchronous tags by default. Choose this option if
 								your site is unable to support DoubleClick\'s asynchronous tags</em>',
 		];
+		$fields['dfp_console_debugging'] = [
+			'id'          => 'dfp_console_debugging',
+			'field'       => 'checkbox',
+			'callback'    => 'checkbox',
+			'title'       => 'Use Console Debugging',
+			'section'     => 'general_settings',
+			'description' => '<em>Show detailed debugging information in the JavaScript console for all visitors.</em>',
+		];
 		$fields['dfp_header_bidding_prebid_enabled'] = [
 			'id'          => 'dfp_header_bidding_prebid_enabled',
 			'field'       => 'checkbox',
@@ -198,6 +209,14 @@ if (is_admin()) {
 			'title'       => 'Use Header Bidding (prebid.js)',
 			'section'     => 'header_bidding_prebid',
 			'description' => '<em>Enable header bidding through prebid.js</em>',
+		];
+		$fields['dfp_header_bidding_prebid_timeout']    = [
+			'id'          => 'dfp_header_bidding_prebid_timeout',
+			'field'       => 'text',
+			'callback'    => 'text',
+			'title'       => 'Prebid Timeout',
+			'section'     => 'header_bidding_prebid',
+			'description' => 'Enter your desired Prebid.js timeout. Defaults to 1000ms (1 second).',
 		];
 		$fields['dfp_header_bidding_amazon_enabled'] = [
 			'id'          => 'dfp_header_bidding_amazon_enabled',
@@ -215,7 +234,14 @@ if (is_admin()) {
 			'section'     => 'header_bidding_amazon',
 			'description' => 'Enter your Amazon UAM publisher ID. Required for Amazon UAM',
 		];
-
+		$fields['dfp_header_bidding_amazon_timeout']    = [
+			'id'          => 'dfp_header_bidding_amazon_timeout',
+			'field'       => 'text',
+			'callback'    => 'text',
+			'title'       => 'Amazon UAM Timeout',
+			'section'     => 'header_bidding_amazon',
+			'description' => 'Enter your desired Amazon UAM timeout. Defaults to 1000ms (1 second).',
+		];
 		return $fields;
 	}));
 	// Settings Page

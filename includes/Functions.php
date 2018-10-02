@@ -318,7 +318,7 @@ function inline_dfp_header_scripts()
     window.dfp_ad_slot_objects = window.dfp_ad_slot_objects || [];
     window.dfp_ready_states = window.dfp_ready_states || {};
     window.dfp_ready_states["gpt"] = false;
-    window.dfpAdsDebug = true;
+    window.dfpAdsDebug = dfp_ad_object[0]["console_debugging"];
 
     function dfpDebug(text) {
      if (window.dfpAdsDebug) {
@@ -343,7 +343,7 @@ function inline_dfp_header_scripts()
 
             <script async="async" src="/wp-content/plugins/dfp-ads/assets/js/prebid0.34.22.js"></script>
             <script>
-                var PREBID_TIMEOUT = 1000;
+                var PREBID_TIMEOUT = parseInt(dfp_ad_object[0]["header_bidding_prebid_timeout"]);
                 var pbjs = pbjs || {};
                 pbjs.que = pbjs.que || [];
                 if (window.header_bidding_prebid_params) {
@@ -390,13 +390,13 @@ function inline_dfp_header_scripts()
         </script>
         <script>
         apstag.init({
-             pubID: "' . $amazon_publisher_id . '",
+             pubID: dfp_ad_object[0]["header_bidding_amazon_publisher_id"],
              adServer: "googletag",
              simplerGPT: true
         });
         if (window.header_bidding_amazon_params) {
             window.dfp_ready_states["amazon"] = false;
-            window.header_bidding_amazon_params["timeout"] = 1000;
+            window.header_bidding_amazon_params["timeout"] = parseInt(dfp_ad_object[0]["header_bidding_amazon_timeout"]);
             googletag.cmd.push(function(){
                 dfpDebug("Amazon requesting bids.");
                 apstag.fetchBids(window.header_bidding_amazon_params, function(bids) {

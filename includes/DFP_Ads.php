@@ -240,6 +240,25 @@ Class DFP_Ads
     }
 
     /**
+     * Set Header Bidding Timeout (prebid.js)
+     *
+     * By default, the setting is 1000ms
+     *
+     * @since  0.3.1
+     * @access public
+     *
+     * @param string $val
+     *
+     * @return bool
+     */
+    public function set_header_bidding_prebid_timeout($val)
+    {
+        $this->header_bidding_prebid_timeout = ($val ? $val : 1000);
+
+        return ($this->header_bidding_prebid_timeout);
+    }
+
+    /**
      * Set Header Bidding (Amazon)
      *
      * By default, the setting is off
@@ -256,6 +275,25 @@ Class DFP_Ads
         $this->header_bidding_amazon_enabled = ($val == 'on' ? true : false);
 
         return (isset($this->header_bidding_amazon_enabled) ? $this->header_bidding_amazon_enabled : false);
+    }
+
+    /**
+     * Set Console Debugging
+     *
+     * By default, the setting is off
+     *
+     * @since  0.3.1
+     * @access public
+     *
+     * @param string $val
+     *
+     * @return bool
+     */
+    public function set_console_debugging($val)
+    {
+        $this->console_debugging = ($val == 'on' ? true : false);
+
+        return (isset($this->console_debugging) ? $this->console_debugging : false);
     }
 
 
@@ -279,6 +317,25 @@ Class DFP_Ads
         return ($this->header_bidding_amazon_publisher_id);
     }
 
+
+    /**
+     * Set Header Bidding Timeout (prebid.js)
+     *
+     * By default, the setting is 1000ms
+     *
+     * @since  0.3.1
+     * @access public
+     *
+     * @param string $val
+     *
+     * @return bool
+     */
+    public function set_header_bidding_amazon_timeout($val)
+    {
+        $this->header_bidding_amazon_timeout = ($val ? $val : 1000);
+
+        return ($this->header_bidding_amazon_timeout);
+    }
 
     /**
      * @param DFP_Ads $dfp_ads
