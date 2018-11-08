@@ -341,7 +341,7 @@ function inline_dfp_header_scripts()
         echo '
             <!-- prebid.js main -->
 
-            <script async="async" src="/wp-content/plugins/dfp-ads/assets/js/prebid0.34.22.js"></script>
+            <script async="async" src="/wp-content/plugins/dfp-ads/assets/js/prebid0.34.22--2.js"></script>
             <script>
                 var PREBID_TIMEOUT = parseInt(dfp_ad_object[0]["header_bidding_prebid_timeout"]);
                 var pbjs = pbjs || {};
