@@ -444,7 +444,7 @@ Class DFP_Ads
 
                 }
 
-                $terms[] = cat; // Add the ancestor first in case of truncation.
+                $terms[] = $cat; // Add the ancestor first in case of truncation.
 
             }
 
