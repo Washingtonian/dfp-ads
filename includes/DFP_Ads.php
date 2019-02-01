@@ -426,15 +426,32 @@ Class DFP_Ads
     {
         global $post;
         $targets = [];
+        $terms = [];
+
         if (is_category()) {
-            $cat = get_category(get_query_var('cat'));
-            $targets[] = preg_replace("/[^A-Za-z0-9 ]/","",html_entity_decode($cat->name));
+
+            $terms[] = get_category(get_query_var('cat'));
+
         } elseif ($post) {
-            $categories = get_the_category($post->ID);
-            foreach ($categories as $c) {
-                $cat       = get_category($c);
-                $targets[] = preg_replace("/[^A-Za-z0-9 ]/","",html_entity_decode($cat->name));
+
+            foreach (get_the_category($post->ID) as $c) {
+
+                $cat = get_category($c);
+
+                foreach (get_ancestors($cat->term_id, 'category') as $ancestor) {
+
+                    $terms[] = get_term($ancestor, 'category');
+
+                }
+
+                $terms[] = cat; // Add the ancestor first in case of truncation.
+
             }
+
+        }
+
+        foreach ($terms as $c) {
+            $targets[] = preg_replace("/[^A-Za-z0-9 ]/","",html_entity_decode($c->name));
         }
 
         $string = mb_strimwidth(implode(",", $targets), 0, 40, "");
