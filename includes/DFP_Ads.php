@@ -550,7 +550,7 @@ Class DFP_Ads
         if ($amazon) {
             foreach ($params->positions as $pos) {
                 if ($pos->post_id) {
-                    $enabled = get_field("header_bidding_prebid_enabled", $pos->post_id);
+                    $enabled = get_field("header_bidding_amazon_enabled", $pos->post_id);
                     if ($enabled) {
                         $thisunit = [];
                         $thisunit['slotID'] = $pos->position_tag;
