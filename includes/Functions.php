@@ -399,6 +399,20 @@ function inline_dfp_header_scripts()
             window.header_bidding_amazon_params["timeout"] = parseInt(dfp_ad_object[0]["header_bidding_amazon_timeout"]);
             googletag.cmd.push(function(){
                 dfpDebug("Amazon requesting bids.");
+                var thisVpWidth = window.innerWidth;
+                for (slot of header_bidding_amazon_params["slots"]) {
+                    if ("sizes" in slot) {
+                        var filteredSizes = slot["sizes"].filter(function(value, index, arr){
+                            return (arr[index][0] < thisVpWidth);
+                        });
+                        slot["sizes"] = filteredSizes;
+                    }
+                }
+                var filteredSlots = header_bidding_amazon_params["slots"].filter(function(value, index, arr){
+                    return (arr[index]["sizes"].length > 0);
+                });
+                header_bidding_amazon_params["slots"] = filteredSlots;
+
                 apstag.fetchBids(window.header_bidding_amazon_params, function(bids) {
                     dfpDebug("Amazon bids returned.");
                     googletag.cmd.push(function(){
