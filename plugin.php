@@ -70,6 +70,9 @@ $dfp_ads->set_asynchronous_loading(dfp_get_settings_value('dfp_synchronous_tags'
 $dfp_ads->set_console_debugging(dfp_get_settings_value('dfp_console_debugging'));
 $dfp_ads->set_header_bidding_prebid(dfp_get_settings_value('dfp_header_bidding_prebid_enabled'));
 $dfp_ads->set_header_bidding_prebid_timeout(dfp_get_settings_value('dfp_header_bidding_prebid_timeout'));
+$dfp_ads->set_header_bidding_prebid_publisher_domain(dfp_get_settings_value('dfp_header_bidding_prebid_publisher_domain'));
+$dfp_ads->set_header_bidding_prebid_bidder_order_fixed(dfp_get_settings_value('dfp_header_bidding_prebid_bidder_order_fixed'));
+$dfp_ads->set_header_bidding_prebid_price_granularity(dfp_get_settings_value('dfp_header_bidding_prebid_price_granularity'));
 $dfp_ads->set_header_bidding_amazon(dfp_get_settings_value('dfp_header_bidding_amazon_enabled'));
 $dfp_ads->set_header_bidding_amazon_publisher_id(dfp_get_settings_value('dfp_header_bidding_amazon_publisher_id'));
 $dfp_ads->set_header_bidding_amazon_timeout(dfp_get_settings_value('dfp_header_bidding_amazon_timeout'));
@@ -152,6 +155,7 @@ add_filter('pre_dfp_ads_to_js', [$dfp_ads, 'send_ads_to_js'], 1);
  * Use it to filter in additional custom positions, targetting data, etc.
  */
 add_filter('pre_dfp_header_bidding_prebid_to_js', [$dfp_ads, 'send_header_bidding_prebid_to_js'], 1);
+add_filter('pre_dfp_header_bidding_prebid_1x_to_js', [$dfp_ads, 'send_header_bidding_prebid_1x_to_js'], 1);
 
 add_filter('pre_dfp_header_bidding_amazon_to_js', [$dfp_ads, 'send_header_bidding_amazon_to_js'], 1);
 
@@ -217,6 +221,30 @@ if (is_admin()) {
 			'title'       => 'Prebid Timeout',
 			'section'     => 'header_bidding_prebid',
 			'description' => 'Enter your desired Prebid.js timeout. Defaults to 1000ms (1 second).',
+		];
+		$fields['dfp_header_bidding_prebid_publisher_domain']    = [
+			'id'          => 'dfp_header_bidding_prebid_publisher_domain',
+			'field'       => 'text',
+			'callback'    => 'text',
+			'title'       => 'Prebid Publisher Domain',
+			'section'     => 'header_bidding_prebid',
+			'description' => 'Enter your publisher domain for SafeFrame ads.',
+		];
+		$fields['dfp_header_bidding_prebid_bidder_order_fixed']    = [
+			'id'          => 'dfp_header_bidding_prebid_bidder_order_fixed',
+			'field'       => 'text',
+			'callback'    => 'text',
+			'title'       => 'Use Fixed Bidder Order',
+			'section'     => 'header_bidding_prebid',
+			'description' => 'In Prebid 1.0+, the default is to randomize the bidder order. Choose this to use the exact order you specify instead.',
+		];
+		$fields['dfp_header_bidding_prebid_price_granularity']    = [
+			'id'          => 'dfp_header_bidding_prebid_price_granularity',
+			'field'       => 'text',
+			'callback'    => 'text',
+			'title'       => 'Price Granularity',
+			'section'     => 'header_bidding_prebid',
+			'description' => 'Enter one of these: low, med, high, dense, auto. Needs to match the line items you created in DFP.',
 		];
 		$fields['dfp_header_bidding_amazon_enabled'] = [
 			'id'          => 'dfp_header_bidding_amazon_enabled',

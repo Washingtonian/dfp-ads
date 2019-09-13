@@ -303,6 +303,14 @@ function inline_dfp_header_scripts()
 {
 
     $prebid = dfp_get_settings_value('dfp_header_bidding_prebid_enabled');
+    $prebid_publisher_domain = dfp_get_settings_value('dfp_header_bidding_prebid_publisher_domain');
+    $prebid_bidder_order_fixed = dfp_get_settings_value('dfp_header_bidding_prebid_bidder_order_fixed');
+    $prebid_bidder_order = $prebid_bidder_order_fixed ? 'fixed' : 'random';
+    $prebid_price_granularity = dfp_get_settings_value('dfp_header_bidding_prebid_price_granularity');
+    if (! $prebid_price_granularity) { $prebid_price_granularity = "dense"; }
+
+
+
     $amazon = dfp_get_settings_value('dfp_header_bidding_amazon_enabled');
     $amazon_publisher_id = dfp_get_settings_value('dfp_header_bidding_amazon_publisher_id');
     $hb = $prebid || $amazon;
@@ -349,12 +357,30 @@ function inline_dfp_header_scripts()
                 if (window.header_bidding_prebid_params) {
                   window.dfp_ready_states["prebid"] = false;
                   pbjs.que.push(function() {
-                      pbjs.setPriceGranularity("dense");
-                      pbjs.addAdUnits(header_bidding_prebid_params);
-                      dfpDebug("Prebid requesting bids.");
-                      pbjs.requestBids({
-                           bidsBackHandler: sendAdserverRequest
-                      });
+                      window.dfp_prebid_major_version = pbjs.version.substr(1,1);
+                      if (dfp_prebid_major_version > 0) {
+                          dfpDebug("Prebid 1.x+ requesting bids.");
+                          var config = {
+                              bidderTimeout: PREBID_TIMEOUT - 50,
+                              priceGranularity: "' . $prebid_price_granularity / '",
+                              bidderOrder: "' . $prebid_bidder_order . '",
+                              publisherDomain: "' . $prebid_publisher_domain . '",
+                              debug: window.dfpAdsDebug,
+                          };
+                          pbjs.addAdUnits(header_bidding_prebid_1x_params);
+                          pbjs.requestBids({
+                               bidsBackHandler: sendAdserverRequest
+                          });
+
+                      } else {
+                          dfpDebug("Prebid 0.x requesting bids.");
+                          pbjs.setPriceGranularity("dense");
+                          pbjs.addAdUnits(header_bidding_prebid_params);
+                          pbjs.requestBids({
+                               bidsBackHandler: sendAdserverRequest
+                          });
+
+                      }
                    });
                    function sendAdserverRequest() {
                        if (pbjs.adserverRequestSent) return;

@@ -258,6 +258,67 @@ Class DFP_Ads
         return ($this->header_bidding_prebid_timeout);
     }
 
+
+    /**
+     * Set Header Bidding Publisher Domain (prebid.js)
+     *
+     * By default, the setting is 1000ms
+     *
+     * @since  0.3.1
+     * @access public
+     *
+     * @param string $val
+     *
+     * @return bool
+     */
+    public function set_header_bidding_prebid_publisher_domain($val)
+    {
+        $this->header_bidding_prebid_publisher_domain = ($val ? $val : null);
+
+        return ($this->header_bidding_prebid_publisher_domain);
+    }
+
+
+
+    /**
+     * Set Header Bidding Fixed Bidder Order (prebid.js)
+     *
+     * By default, the setting is false
+     *
+     * @since  0.3.1
+     * @access public
+     *
+     * @param string $val
+     *
+     * @return bool
+     */
+    public function set_header_bidding_prebid_bidder_order_fixed($val)
+    {
+        $this->header_bidding_prebid_bidder_order_fixed = ($val ? $val : false);
+
+        return ($this->header_bidding_prebid_bidder_order_fixed);
+    }
+
+
+    /**
+     * Set Header Bidding Price Granularity (prebid.js)
+     *
+     * By default, the setting is "dense"
+     *
+     * @since  0.3.1
+     * @access public
+     *
+     * @param string $val
+     *
+     * @return bool
+     */
+    public function set_header_bidding_prebid_price_granularity($val)
+    {
+        $this->header_bidding_prebid_price_granularity = ($val ? $val : "dense");
+
+        return ($this->header_bidding_prebid_price_granularity);
+    }
+
     /**
      * Set Header Bidding (Amazon)
      *
@@ -653,6 +714,107 @@ Class DFP_Ads
     }
 
 
+
+    /**
+     * @param DFP_Ads $dfp_ads
+     *
+     * @return DFP_Ads
+     */
+    public function send_header_bidding_prebid_1x_to_js($dfp_ads)
+    {
+        // Copy the original
+        $params            = clone $this;
+        $params->positions = dfp_get_ad_positions();
+        // $object = [];
+        $object = [];
+        $sizeConfig = [];
+        $mappingsArray = $this->browser_sizes;
+
+        foreach ($mappingsArray as $mapping) {
+
+
+        }
+
+
+        if ($params->header_bidding_prebid_enabled) {
+            foreach ($params->positions as $pos) {
+                if ($pos->post_id) {
+                    $enabled = get_field("header_bidding_prebid_enabled", $pos->post_id);
+
+                    if ($enabled) {
+                        $thisunit          = [];
+                        $thisunit['code']  = $pos->position_tag;
+
+                        $thisunit['mediaTypes'] = ['banner' => $pos->sizes];
+
+                        $sizeArray         = $pos->sizes;
+                        if ( ! is_array($sizeArray[0])) {
+                            $sizeArray = [$sizeArray];
+                        }
+                        $thisunit['sizeMapping'] = [];
+
+
+
+                        foreach ($sizeArray as $size) {
+
+                            foreach ($mappingsArray as $prospect) {
+                                if (dfp_pixels_to_string($size) == $prospect[0]) {
+                                    $browser_size    = dfp_pixels_to_array($prospect[1]);
+                                    $key["minWidth"] = $browser_size[0];
+                                    $key["sizes"]    = [];
+
+                                    array_push($key["sizes"], $size);
+                                    foreach ($this->alternate_sizes as $alternate) {
+                                        if (dfp_pixels_to_string($size) == $alternate[0]) {
+                                            foreach ($alternate[1] as $newSize) {
+                                                if (in_array($newSize, $sizeArray)) {
+                                                    array_push($key["sizes"], $newSize);
+                                                }
+                                            }
+                                        }
+                                    }
+                                    // This fails on multidim arrays.
+                                    // $key["sizes"] = array_unique ($key["sizes"]);
+                                    array_push($thisunit['sizeMapping'], $key);
+                                }
+                            }
+                        }
+
+                        $bidders = get_field("prebid_bidders", $pos->post_id);
+                        $thisunit['bids'] = [];
+                        foreach ($bidders as $bidder) {
+                            if (array_key_exists('params', $bidder)) {
+                                foreach ($bidder['params'] as $param) {
+                                    if (preg_match("/^[0-9]*$/", $param['value']) === 1) {
+                                        $param['value'] = intval($param['value']);
+                                    } else {
+                                        if (preg_match("/^[0-9\.]*$/", $param['value']) === 1) {
+                                            $param['value'] = floatval($param['value']);
+                                        } else {
+                                            if (substr($param['value'], 0, 1) === "[") {
+                                                $param['value'] = json_decode($param['value']);
+                                            }
+                                        }
+                                    }
+                                    $bidder['newparams'][$param['name']] = $param['value'];
+                                }
+                                unset($bidder['params']);
+                                $bidder['params'] = $bidder['newparams'];
+                                unset($bidder['newparams']);
+                            }
+                            array_push($thisunit['bids'], $bidder);
+                        }
+                        array_push($object, $thisunit);
+                    }
+                }
+            }
+        }
+
+        return $object;
+    }
+
+
+
     /**
      * Registers Scripts. Localizes data to interstitial_ad.js
      *
@@ -670,6 +832,7 @@ Class DFP_Ads
         $ad_positions = apply_filters('pre_dfp_ads_to_js', $this);
         // wp_enqueue_script($this->google_ad_script_name);
         $header_bidding_prebid_params = apply_filters('pre_dfp_header_bidding_prebid_to_js', $this);
+        $header_bidding_prebid_1x_params = apply_filters('pre_dfp_header_bidding_prebid_1x_to_js', $this);
         $header_bidding_amazon_params = apply_filters('pre_dfp_header_bidding_amazon_to_js', $this);
 
         // Add mandatory DFP inline scripts
@@ -682,6 +845,7 @@ Class DFP_Ads
         // Send data to front end.
         wp_localize_script($this->script_name, 'dfp_ad_object', [$ad_positions]);
         wp_localize_script($this->script_name, 'header_bidding_prebid_params', $header_bidding_prebid_params);
+        wp_localize_script($this->script_name, 'header_bidding_prebid_1x_params', $header_bidding_prebid_1x_params);
         wp_localize_script($this->script_name, 'header_bidding_prebid_enabled', [$this->header_bidding_prebid_enabled]);
         wp_localize_script($this->script_name, 'header_bidding_amazon_params', $header_bidding_amazon_params);
         wp_localize_script($this->script_name, 'header_bidding_amazon_enabled', [$this->header_bidding_amazon_enabled]);
