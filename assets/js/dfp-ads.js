@@ -278,7 +278,9 @@ googletag.cmd.push(function() {
         mapping.addSize(map, targetAdSizes);
     }
 
-    theUnit.defineSizeMapping(mapping.build());
+    if (typeof theUnit.defineSizeMapping === 'function') {
+      theUnit.defineSizeMapping(mapping.build());
+    }
 
   }
 
