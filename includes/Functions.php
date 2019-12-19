@@ -362,7 +362,7 @@ function inline_dfp_header_scripts()
                           dfpDebug("Prebid 1.x+ requesting bids.");
                           var config = {
                               bidderTimeout: PREBID_TIMEOUT - 50,
-                              priceGranularity: "' . $prebid_price_granularity / '",
+                              priceGranularity: "' . $prebid_price_granularity . '",
                               bidderOrder: "' . $prebid_bidder_order . '",
                               publisherDomain: "' . $prebid_publisher_domain . '",
                               debug: window.dfpAdsDebug,
