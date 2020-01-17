@@ -379,7 +379,7 @@ Class DFP_Ads
     {
         $this->header_bidding_prebid_size_config = (json_decode($val) ? json_decode($val) :
         [ [
-            'mediaQuery' => '(min-width: 480px, max-width: 767px)',
+            'mediaQuery' => '(max-width: 479px)',
             'sizesSupported'=> [
               [320, 50],
               [300, 250]
@@ -387,26 +387,36 @@ Class DFP_Ads
             'labels'=> ['xs']
         ],
         [
-            'mediaQuery'=> '(min-width: 768px, max-width: 991px)',
+            'mediaQuery'=> '((min-width: 480px) and (max-width: 767px))',
             'sizesSupported'=> [
-            [320, 50],
-            [300, 250]
+            [300, 250],
+            [300, 600],
+            [600, 300],
+            [728, 90]
             ],
             'labels'=> ['sm']
         ],
         [
-            'mediaQuery'=> '(min-width: 992px, max-width: 1199px)',
+            'mediaQuery'=> '((min-width: 768px) and (max-width: 991px))',
             'sizesSupported'=> [
-              [320, 50],
-              [300, 250]
+              [300, 250],
+              [300, 600],
+              [600, 300],
+              [728, 90],
+              [970, 90],
+              [970, 250]
             ],
             'labels' => ['md']
         ],
         [
-            'mediaQuery'=> '(min-width: 1200px)',
+            'mediaQuery'=> '(min-width: 992px)',
             'sizesSupported' => [
-            [320, 50],
-            [300, 250]
+            [300, 250],
+            [300, 600],
+            [600, 300],
+            [728, 90],
+            [970, 90],
+            [970, 250]
             ],
             'labels'=> ['lg']
         ]  ]  );
@@ -800,15 +810,18 @@ Class DFP_Ads
                                 if (array_key_exists('params', $bidder)) {
                                     foreach ($bidder['params'] as $param) {
                                         if (preg_match("/^[0-9]*$/", $param['value']) === 1) {
+
+                                            // Is it an int? If so cast it to a int.
                                             $param['value'] = intval($param['value']);
-                                        } else {
-                                            if (preg_match("/^[0-9\.]*$/", $param['value']) === 1) {
-                                                $param['value'] = floatval($param['value']);
-                                            } else {
-                                                if (substr($param['value'], 0, 1) === "[") {
-                                                    $param['value'] = json_decode($param['value']);
-                                                }
-                                            }
+                                        } else if (preg_match("/^[0-9\.]*$/", $param['value']) === 1) {
+
+                                            // Is it a float? If so cast it to a float.
+                                            $param['value'] = floatval($param['value']);
+
+                                        } else  if (in_array(substr($param['value'], 0, 1), ["[", '"'])) {
+                                            // If the string starts with [ or ", interpret it as json.
+                                            // You can use this to enter "192" as a string or [1, 2] as an array
+                                            $param['value'] = json_decode($param['value']);
                                         }
                                         $bidder['newparams'][$param['name']] = $param['value'];
                                     }
@@ -878,7 +891,7 @@ Class DFP_Ads
                         }
 
                         if ($match_all_labels) {
-                            $thisunit['labelAll'] = $match_all_labels;
+                            $thisunit['labelAllaas'] = $match_all_labels;
                         }
 
                         if (is_array($bidders)) {
@@ -886,15 +899,18 @@ Class DFP_Ads
                                 if (array_key_exists('params', $bidder)) {
                                     foreach ($bidder['params'] as $param) {
                                         if (preg_match("/^[0-9]*$/", $param['value']) === 1) {
+
+                                            // Is it an int? If so cast it to a int.
                                             $param['value'] = intval($param['value']);
-                                        } else {
-                                            if (preg_match("/^[0-9\.]*$/", $param['value']) === 1) {
-                                                $param['value'] = floatval($param['value']);
-                                            } else {
-                                                if (substr($param['value'], 0, 1) === "[") {
-                                                    $param['value'] = json_decode($param['value']);
-                                                }
-                                            }
+                                        } else if (preg_match("/^[0-9\.]*$/", $param['value']) === 1) {
+
+                                            // Is it a float? If so cast it to a float.
+                                            $param['value'] = floatval($param['value']);
+
+                                        } else  if (in_array(substr($param['value'], 0, 1), ["[", '"'])) {
+                                            // If the string starts with [ or ", interpret it as json.
+                                            // You can use this to enter "192" as a string or [1, 2] as an array
+                                            $param['value'] = json_decode($param['value']);
                                         }
                                         $bidder['newparams'][$param['name']] = $param['value'];
                                     }
@@ -902,7 +918,7 @@ Class DFP_Ads
                                     $bidder['params'] = $bidder['newparams'];
                                     unset($bidder['newparams']);
                                 }
-                                if (strpos($bidderkey,"-disabled") < 0) {
+                                if (strpos($bidder['bidder'],"disabled") === FALSE) {
                                     array_push($thisunit['bids'], $bidder);
                                 }
                             }

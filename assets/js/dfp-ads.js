@@ -464,10 +464,10 @@ googletag.cmd.push(function() {
   function prebidPrepare() {
     window.dfp_ready_states["prebid"] = false;
     var PREBID_TIMEOUT = parseInt(dfp_ad_object[0]["header_bidding_prebid_timeout"]);
-    var pbp = window.header_bidding_prebid_params;
-    var dao = dfp_ad_object[0];
 
     pbjs.que.push(function() {
+        var pbp = window.header_bidding_prebid_params;
+        var dao = dfp_ad_object[0];
         window.dfp_prebid_major_version = pbjs.version.substr(1,1);
         if (dfp_prebid_major_version > 0) {
             dfpDebug("Prebid 1.x+ requesting bids.");
@@ -477,7 +477,7 @@ googletag.cmd.push(function() {
                 bidderOrder: dao['header_bidding_prebid_bidder_order_fixed'],
                 publisherDomain: dao['prebid_publisher_domain'],
                 debug: window.dfpAdsDebug,
-                sizeMapping: dao['header_bidding_prebid_size_config']
+                sizeConfig: dao['header_bidding_prebid_size_config']
             };
             dfpDebug(config);
             pbjs.setConfig(config);
