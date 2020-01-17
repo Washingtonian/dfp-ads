@@ -795,27 +795,29 @@ Class DFP_Ads
 
                         $bidders = get_field("prebid_bidders", $pos->post_id);
                         $thisunit['bids'] = [];
-                        foreach ($bidders as $bidder) {
-                            if (array_key_exists('params', $bidder)) {
-                                foreach ($bidder['params'] as $param) {
-                                    if (preg_match("/^[0-9]*$/", $param['value']) === 1) {
-                                        $param['value'] = intval($param['value']);
-                                    } else {
-                                        if (preg_match("/^[0-9\.]*$/", $param['value']) === 1) {
-                                            $param['value'] = floatval($param['value']);
+                        if (is_array($bidders)) {
+                            foreach ($bidders as $bidder) {
+                                if (array_key_exists('params', $bidder)) {
+                                    foreach ($bidder['params'] as $param) {
+                                        if (preg_match("/^[0-9]*$/", $param['value']) === 1) {
+                                            $param['value'] = intval($param['value']);
                                         } else {
-                                            if (substr($param['value'], 0, 1) === "[") {
-                                                $param['value'] = json_decode($param['value']);
+                                            if (preg_match("/^[0-9\.]*$/", $param['value']) === 1) {
+                                                $param['value'] = floatval($param['value']);
+                                            } else {
+                                                if (substr($param['value'], 0, 1) === "[") {
+                                                    $param['value'] = json_decode($param['value']);
+                                                }
                                             }
                                         }
+                                        $bidder['newparams'][$param['name']] = $param['value'];
                                     }
-                                    $bidder['newparams'][$param['name']] = $param['value'];
+                                    unset($bidder['params']);
+                                    $bidder['params'] = $bidder['newparams'];
+                                    unset($bidder['newparams']);
                                 }
-                                unset($bidder['params']);
-                                $bidder['params'] = $bidder['newparams'];
-                                unset($bidder['newparams']);
+                                array_push($thisunit['bids'], $bidder);
                             }
-                            array_push($thisunit['bids'], $bidder);
                         }
                         array_push($object, $thisunit);
                     }
@@ -838,84 +840,72 @@ Class DFP_Ads
         // Copy the original
         $params            = clone $this;
         $params->positions = dfp_get_ad_positions();
-        // $object = [];
         $object = [];
         $sizeConfig = [];
-        $mappingsArray = $this->browser_sizes;
-
-        foreach ($mappingsArray as $mapping) {
-
-
-        }
-
 
         if ($params->header_bidding_prebid_enabled) {
             foreach ($params->positions as $pos) {
                 if ($pos->post_id) {
+
                     $enabled = get_field("header_bidding_prebid_enabled", $pos->post_id);
 
                     if ($enabled) {
-                        $thisunit          = [];
-                        $thisunit['code']  = $pos->position_tag;
+                        $bidders = get_field("prebid_bidders", $pos->post_id);
+                        $mediaTypes = get_field("media_type", $pos->post_id);
+                        $match_any_labels = get_field("match_any_labels", $pos->post_id);
+                        $match_all_labels = get_field("match_all_labels", $pos->post_id);
 
-                        $thisunit['mediaTypes'] = ['banner' => $pos->sizes];
-
-                        $sizeArray         = $pos->sizes;
-                        if ( ! is_array($sizeArray[0])) {
-                            $sizeArray = [$sizeArray];
+                        if ($mediaTypes && !is_array($mediaTypes)) {
+                            $mediaTypes = [$mediaTypes => [] ];
                         }
-                        $thisunit['sizeMapping'] = [];
 
+                        if (array_key_exists('banner',$mediaTypes)) {
+                            $sizes = $pos->sizes;
+                            if (! is_array($sizes[0])) {
+                                $sizes = [$sizes];
+                            }
+                            $mediaTypes['banner']['sizes'] = $sizes;
+                        }
 
+                        $thisunit          = [
+                            'code' => $pos->position_tag,
+                            'mediaTypes' => $mediaTypes,
+                            'bids' => []
+                        ];
 
-                        foreach ($sizeArray as $size) {
+                        if ($match_any_labels) {
+                            $thisunit['labelAny'] = $match_any_labels;
+                        }
 
-                            foreach ($mappingsArray as $prospect) {
-                                if (dfp_pixels_to_string($size) == $prospect[0]) {
-                                    $browser_size    = dfp_pixels_to_array($prospect[1]);
-                                    $key["minWidth"] = $browser_size[0];
-                                    $key["sizes"]    = [];
+                        if ($match_all_labels) {
+                            $thisunit['labelAll'] = $match_all_labels;
+                        }
 
-                                    array_push($key["sizes"], $size);
-                                    foreach ($this->alternate_sizes as $alternate) {
-                                        if (dfp_pixels_to_string($size) == $alternate[0]) {
-                                            foreach ($alternate[1] as $newSize) {
-                                                if (in_array($newSize, $sizeArray)) {
-                                                    array_push($key["sizes"], $newSize);
+                        if (is_array($bidders)) {
+                            foreach ($bidders as $bidderkey => $bidder) {
+                                if (array_key_exists('params', $bidder)) {
+                                    foreach ($bidder['params'] as $param) {
+                                        if (preg_match("/^[0-9]*$/", $param['value']) === 1) {
+                                            $param['value'] = intval($param['value']);
+                                        } else {
+                                            if (preg_match("/^[0-9\.]*$/", $param['value']) === 1) {
+                                                $param['value'] = floatval($param['value']);
+                                            } else {
+                                                if (substr($param['value'], 0, 1) === "[") {
+                                                    $param['value'] = json_decode($param['value']);
                                                 }
                                             }
                                         }
+                                        $bidder['newparams'][$param['name']] = $param['value'];
                                     }
-                                    // This fails on multidim arrays.
-                                    // $key["sizes"] = array_unique ($key["sizes"]);
-                                    array_push($thisunit['sizeMapping'], $key);
+                                    unset($bidder['params']);
+                                    $bidder['params'] = $bidder['newparams'];
+                                    unset($bidder['newparams']);
+                                }
+                                if (strpos($bidderkey,"-disabled") < 0) {
+                                    array_push($thisunit['bids'], $bidder);
                                 }
                             }
-                        }
-
-                        $bidders = get_field("prebid_bidders", $pos->post_id);
-                        $thisunit['bids'] = [];
-                        foreach ($bidders as $bidder) {
-                            if (array_key_exists('params', $bidder)) {
-                                foreach ($bidder['params'] as $param) {
-                                    if (preg_match("/^[0-9]*$/", $param['value']) === 1) {
-                                        $param['value'] = intval($param['value']);
-                                    } else {
-                                        if (preg_match("/^[0-9\.]*$/", $param['value']) === 1) {
-                                            $param['value'] = floatval($param['value']);
-                                        } else {
-                                            if (substr($param['value'], 0, 1) === "[") {
-                                                $param['value'] = json_decode($param['value']);
-                                            }
-                                        }
-                                    }
-                                    $bidder['newparams'][$param['name']] = $param['value'];
-                                }
-                                unset($bidder['params']);
-                                $bidder['params'] = $bidder['newparams'];
-                                unset($bidder['newparams']);
-                            }
-                            array_push($thisunit['bids'], $bidder);
                         }
                         array_push($object, $thisunit);
                     }
