@@ -487,6 +487,44 @@ googletag.cmd.push(function() {
             });
         } else {
             dfpDebug("Prebid 0.x requesting bids.");
+            var thisVpWidth = window.innerWidth;
+           // First, check to see if a sizes array exists, and is blank. If so, remove it
+           // Then, check each item in sizes array. Remove any that are too large
+           // Then, check all bidders for a non-empty sizes array.
+           // If a sizes array is empty now, the whole bidder is DQed, remove it.
+           // If no sizes array exists, all good, bidder is responsive; keep it.
+             for (unit of header_bidding_prebid_params) {
+                 if (unit != undefined) {
+                     if ("bids" in unit) {
+                         for (bid of unit["bids"]) {
+                             if ("sizes" in bid["params"] && bid["params"]["sizes"].length > 0) {
+                                 if (Array.isArray(bid["params"]["sizes"][0])) {
+                                     var filteredSizes = bid["params"]["sizes"].filter(function(value, index, arr){
+                                         return (parseInt(arr[index][0]) < thisVpWidth);
+                                     });
+                                 } else {
+                                     filteredSizes = [];
+                                     if (parseInt(bid["params"]["sizes"][0]) < thisVpWidth) {
+                                         filteredSizes = bid["params"]["sizes"];
+                                     }
+                                 }
+                                 bid["params"]["sizes"] = filteredSizes;
+                             } else {
+                                 delete(bid["params"]["sizes"]);
+                             }
+                        }
+
+                        var filteredBids = unit["bids"].filter(function(value, index, arr){
+                            if ((! "sizes" in arr[index]["params"]) || (!arr[index]["params"]["sizes"])) {
+                                return true;
+                            }
+                            return (arr[index]["params"]["sizes"].length > 0);
+                        });
+                        unit["bids"] = filteredBids;
+                   }
+                }
+             }
+
             pbjs.setPriceGranularity("dense");
             pbjs.addAdUnits(header_bidding_prebid_params);
             pbjs.requestBids({
