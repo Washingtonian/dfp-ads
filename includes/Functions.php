@@ -343,7 +343,7 @@ function inline_dfp_header_scripts()
         echo '
             <!-- prebid.js main -->
 
-            <script async="async" src="/wp-content/plugins/dfp-ads/assets/js/prebid3.1.1.js"></script>
+            <script async="async" src="/wp-content/plugins/dfp-ads/assets/js/' . dfp_get_settings_value('dfp_header_bidding_prebid_version') . '"></script>
         ';
 
 

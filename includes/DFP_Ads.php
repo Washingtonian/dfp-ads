@@ -287,6 +287,23 @@ Class DFP_Ads
 
 
     /**
+     * Set Header Bidding Library Version (prebid.js)
+     *
+     *
+     * @since  0.3.1
+     * @access public
+     *
+     * @param string $val
+     *
+     * @return bool
+     */
+    public function set_header_bidding_prebid_version($val)
+    {
+        $this->header_bidding_prebid_version = ($val ? $val : "prebid3.3.0.js");
+        return ($this->header_bidding_prebid_version);
+    }
+
+    /**
      * Set Header Bidding Publisher Domain (prebid.js)
      *
      * By default, the setting is 1000ms

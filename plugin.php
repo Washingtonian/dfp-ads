@@ -75,6 +75,7 @@ $dfp_ads->set_header_bidding_prebid_publisher_domain(dfp_get_settings_value('dfp
 $dfp_ads->set_header_bidding_prebid_bidder_order_fixed(dfp_get_settings_value('dfp_header_bidding_prebid_bidder_order_fixed'));
 $dfp_ads->set_header_bidding_prebid_price_granularity(dfp_get_settings_value('dfp_header_bidding_prebid_price_granularity'));
 $dfp_ads->set_header_bidding_prebid_size_config(dfp_get_settings_value('dfp_header_bidding_prebid_size_config'));
+$dfp_ads->set_header_bidding_prebid_version(dfp_get_settings_value('dfp_header_bidding_prebid_version'));
 $dfp_ads->set_header_bidding_amazon(dfp_get_settings_value('dfp_header_bidding_amazon_enabled'));
 $dfp_ads->set_header_bidding_amazon_publisher_id(dfp_get_settings_value('dfp_header_bidding_amazon_publisher_id'));
 $dfp_ads->set_header_bidding_amazon_timeout(dfp_get_settings_value('dfp_header_bidding_amazon_timeout'));
@@ -263,6 +264,14 @@ if (is_admin()) {
 			'title'       => 'Prebid 1.x+ Sizes Configuration',
 			'section'     => 'header_bidding_prebid',
 			'description' => 'Paste in a JSON size config <a href="http://prebid.org/dev-docs/prebid-1.0-API.html#size-mapping-changes" target="_blank">like the one here.</a>',
+		];
+		$fields['dfp_header_bidding_prebid_version']    = [
+			'id'          => 'dfp_header_bidding_prebid_version',
+			'field'       => 'version_dropdown',
+			'callback'    => 'version_dropdown',
+			'title'       => 'Enabled Prebid Version',
+			'section'     => 'header_bidding_prebid',
+			'description' => 'Choose which Prebid JS file to use.',
 		];
 		$fields['dfp_header_bidding_amazon_enabled'] = [
 			'id'          => 'dfp_header_bidding_amazon_enabled',

@@ -189,6 +189,51 @@ Abstract Class Form
         <?php
     }
 
+    /**
+     * Creates Select Options for widget
+     *
+     * @TODO   Add Labels
+     *
+     * @since  0.2.0
+     * @access public
+     *
+     * @param $args Array
+     */
+    public function version_dropdown($args)
+    {
+        // Why is it so nested?
+        $args = $args[0];
+        // Field values
+        $id    = $this->options_str . '[' . $args['id'] . ']';
+        $title = $args['title'];
+        $value = (! isset($this->values[$args['id']]) ? '' : $this->values[$args['id']]);
+        ?>
+        <div>
+            <select id="<?php _e($id, 'dfp-ads'); ?>" name="<?php _e($id, 'dfp-ads'); ?>">
+                <?php
+                    $filenames = glob(plugin_dir_path( __FILE__ ) . "../../assets/js/*.js");
+                    foreach ($filenames as $filename) {
+                        ?> <option
+                            name="<?php echo basename($filename)?>"
+
+                            <?php
+
+                            if ($value == basename($filename)) {
+                                echo ' selected';
+                            } 
+                            ?>
+                            ><?php echo basename($filename)?></option> <?php
+                    }
+
+                ?>
+            </select>
+            <?php if (isset($args['description'])) { ?>
+                <p><em><?php _e($args['description'], 'dfp-ads'); ?></em></p>
+            <?php } ?>
+        </div>
+        <?php
+    }
+
 
     /**
      * Creates checkbox input
