@@ -127,6 +127,39 @@ Abstract Class Form
 
 
     /**
+     * Creates large input
+     *
+     * @TODO   Add Labels
+     *
+     * @since  0.2.0
+     * @access public
+     *
+     * @param $args array
+     */
+    public function textarea($args)
+    {
+        // Why is it so nested?
+        $args  = $args[0];
+        $id    = $this->options_str . '[' . $args['id'] . ']';
+        $field = $args['field'];
+        $title = $args['title'];
+        $value = (! isset($this->values[$args['id']]) ? '' : $this->values[$args['id']]);
+        ?>
+        <div>
+            <textarea rows=5 cols=80
+                   id="<?php _e($id, 'dfp-ads'); ?>"
+                   name="<?php _e($id, 'dfp-ads'); ?>"
+                   /><?php _e($value, 'dfp-ads'); ?></textarea>
+            <?php
+            if (isset($args['description'])) {
+                echo '<p><em>' . $args['description'] . '</em></p>';
+            }
+            ?>
+        </div>
+        <?php
+    }
+
+    /**
      * Creates Select Options for widget
      *
      * @TODO   Add Labels

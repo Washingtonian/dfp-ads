@@ -323,22 +323,16 @@ function inline_dfp_header_scripts()
     <script>
     var googletag = googletag || {};
     googletag.cmd = googletag.cmd || [];
+
     window.dfp_ad_slot_objects = window.dfp_ad_slot_objects || [];
     window.dfp_ready_states = window.dfp_ready_states || {};
     window.dfp_ready_states["gpt"] = false;
     window.dfpAdsDebug = dfp_ad_object[0]["console_debugging"];
 
-    function dfpDebug(text) {
-     if (window.dfpAdsDebug) {
-       console.log(text);
-     }
-    }
-
     ';
     if ($hb) {
         echo '
           googletag.cmd.push(function () {
-            googletag.pubads().disableInitialLoad();
             googletag.pubads().setTargeting("hb_active","true");
           });
         ';
@@ -349,61 +343,7 @@ function inline_dfp_header_scripts()
         echo '
             <!-- prebid.js main -->
 
-            <script async="async" src="/wp-content/plugins/dfp-ads/assets/js/prebid0.34.22--2.js"></script>
-            <script>
-                var PREBID_TIMEOUT = parseInt(dfp_ad_object[0]["header_bidding_prebid_timeout"]);
-                var pbjs = pbjs || {};
-                pbjs.que = pbjs.que || [];
-                if (window.header_bidding_prebid_params) {
-                  window.dfp_ready_states["prebid"] = false;
-                  pbjs.que.push(function() {
-                      window.dfp_prebid_major_version = pbjs.version.substr(1,1);
-                      if (dfp_prebid_major_version > 0) {
-                          dfpDebug("Prebid 1.x+ requesting bids.");
-                          var config = {
-                              bidderTimeout: PREBID_TIMEOUT - 50,
-                              priceGranularity: "' . $prebid_price_granularity . '",
-                              bidderOrder: "' . $prebid_bidder_order . '",
-                              publisherDomain: "' . $prebid_publisher_domain . '",
-                              debug: window.dfpAdsDebug,
-                          };
-                          pbjs.addAdUnits(header_bidding_prebid_1x_params);
-                          pbjs.requestBids({
-                               bidsBackHandler: sendAdserverRequest
-                          });
-
-                      } else {
-                          dfpDebug("Prebid 0.x requesting bids.");
-                          pbjs.setPriceGranularity("dense");
-                          pbjs.addAdUnits(header_bidding_prebid_params);
-                          pbjs.requestBids({
-                               bidsBackHandler: sendAdserverRequest
-                          });
-
-                      }
-                   });
-                   function sendAdserverRequest() {
-                       if (pbjs.adserverRequestSent) return;
-                       dfpDebug("Prebid bids returned.");
-                       googletag.cmd.push(function() {
-                           pbjs.que.push(function() {
-                                 pbjs.setTargetingForGPTAsync();
-                                 pbjs.adserverRequestSent = true;
-                                 window.dfp_ready_states["prebid"] = true;
-                                 dfpDebug("Prebid ready.");
-                           });
-                       });
-                   }
-                   function prebidTimeout() {
-                       if (pbjs.adserverRequestSent) return;
-                       dfpDebug("Prebid failure, proceeding.");
-                       sendAdserverRequest();
-                   }
-                   setTimeout(prebidTimeout, PREBID_TIMEOUT);
-                } else {
-                    dfpDebug("Prebid: No header_bidding_prebid_params.");
-                }
-            </script>
+            <script async="async" src="/wp-content/plugins/dfp-ads/assets/js/prebid3.1.1.js"></script>
         ';
 
 
@@ -413,51 +353,7 @@ function inline_dfp_header_scripts()
         echo '
         <script>
             !function(a9,a,p,s,t,A,g){if(a[a9])return;function q(c,r){a[a9]._Q.push([c,r])}a[a9]={init:function(){q("i",arguments)},fetchBids:function(){q("f",arguments)},setDisplayBids:function(){},targetingKeys:function(){return[]},_Q:[]};A=p.createElement(s);A.async=!0;A.src=t;g=p.getElementsByTagName(s)[0];g.parentNode.insertBefore(A,g)}("apstag",window,document,"script","//c.amazon-adsystem.com/aax2/apstag.js");
-        </script>
-        <script>
-        apstag.init({
-             pubID: dfp_ad_object[0]["header_bidding_amazon_publisher_id"],
-             adServer: "googletag",
-             simplerGPT: true
-        });
-        if (window.header_bidding_amazon_params) {
-            window.dfp_ready_states["amazon"] = false;
-            window.header_bidding_amazon_params["timeout"] = parseInt(dfp_ad_object[0]["header_bidding_amazon_timeout"]);
-            googletag.cmd.push(function(){
-                dfpDebug("Amazon requesting bids.");
-                var thisVpWidth = window.innerWidth;
-                for (slot of header_bidding_amazon_params["slots"]) {
-                    if ("sizes" in slot) {
-                        var filteredSizes = slot["sizes"].filter(function(value, index, arr){
-                            return (arr[index][0] < thisVpWidth);
-                        });
-                        slot["sizes"] = filteredSizes;
-                    }
-                }
-                var filteredSlots = header_bidding_amazon_params["slots"].filter(function(value, index, arr){
-                    return (arr[index]["sizes"].length > 0);
-                });
-                header_bidding_amazon_params["slots"] = filteredSlots;
 
-                apstag.fetchBids(window.header_bidding_amazon_params, function(bids) {
-                    dfpDebug("Amazon bids returned.");
-                    googletag.cmd.push(function(){
-                         apstag.setDisplayBids();
-                         window.dfp_ready_states["amazon"] = true;
-                         dfpDebug("Amazon ready.");
-                    } ) ;
-                } );
-            } );
-            setTimeout(function() {
-                googletag.cmd.push(function(){
-                    if (window.dfp_ready_states["amazon"]) { return; }
-                    dfpDebug("Amazon failure, proceeding.");
-                    window.dfp_ready_states["amazon"] = true;
-                });
-            }, 1500);
-        } else {
-            dfpDebug("Amazon: No header_bidding_amazon_params.");
-        }
         </script>
         ';
 

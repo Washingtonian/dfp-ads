@@ -15,11 +15,32 @@
  *
  */
 
-function dfpDebug(text) {
+ function decorateLog(args, prefix) {
+   args = [].slice.call(args);
+   prefix && args.unshift(prefix);
+   args.unshift('display: inline-block; color: #fff; background: #054663; padding: 1px 4px; border-radius: 3px;');
+   args.unshift('%cdfp-ads');
+   return args;
+ }
+
+function dfpDebug() {
   if (window.dfpAdsDebug) {
-    console.log(text);
+    console.log.apply(console, decorateLog(arguments, 'DEBUG:'));
   }
 }
+
+function dfpInfo() {
+ console.info.apply(console, decorateLog(arguments, 'INFO:'));
+}
+
+function dfpWarn() {
+ console.warn.apply(console, decorateLog(arguments, 'WARN:'));
+}
+
+function dfpError() {
+ console.error.apply(console, decorateLog(arguments, 'ERROR:'));
+}
+
 
 var googletag = googletag || {};
 googletag.cmd = googletag.cmd || [];
@@ -29,13 +50,15 @@ window.dfp_ad_slot_objects = window.dfp_ad_slot_objects || [];
 var windowWidth = window.innerWidth;
 
 googletag.cmd.push(function() {
+  googletag.pubads().disableInitialLoad();
+  dfpDebug("Disabled initial load.");
+  dfpDebug("Running DFP version: " + googletag.getVersion());
+  dfpDebug("Pubads ready status: " + googletag.pubadsReady);
 
   var resizeTimer;
   // Object from Ajax
   var dfp_ad_data = dfp_ad_object[0],
     acct_id = dfp_ad_data.account_id;
-
-  googletag.pubads().disableInitialLoad();
 
   if (getCookie('dfp_session_tracker') && parseInt(getCookie('dfp_session_tracker')) < 10) {
     setCookie("dfp_session_tracker", parseInt(getCookie('dfp_session_tracker')) + parseInt(1), 1);
@@ -283,22 +306,22 @@ googletag.cmd.push(function() {
   }
 
 
-  window.addEventListener('resize', function() {
-    var currentWidth = window.innerWidth;
-    if (windowWidth !== currentWidth) {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(resizer, 500);
-      windowWidth = currentWidth;
-    }
-  });
 
   /**
-   * [resizer description]
+   * [dfpHandleResize description]
    * @return {[type]} [description]
    */
-  function resizer() {
+  function dfpHandleResize() {
+      var currentWidth = window.innerWidth;
+      if (windowWidth !== currentWidth) {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(dfpHandleResize, 500);
+        windowWidth = currentWidth;
+      }
     // googletag.pubads().refresh();
   }
+
+  window.addEventListener('resize', dfpHandleResize);
 
   /**
    *
@@ -367,6 +390,112 @@ googletag.cmd.push(function() {
     }
   }
 
+  function amazonSendAdTargeting(bids) {
+    dfpDebug("Amazon bids returned.");
+    googletag.cmd.push(function(){
+         apstag.setDisplayBids();
+         window.dfp_ready_states["amazon"] = true;
+         dfpDebug("Amazon ready.");
+    } ) ;
+  }
+
+  function amazonTimeout() {
+    googletag.cmd.push(function(){
+        if (window.dfp_ready_states["amazon"]) { return; }
+        dfpDebug("Amazon failure, proceeding.");
+        window.dfp_ready_states["amazon"] = true;
+    });
+  }
+
+  function amazonPrepare() {
+    apstag.init({
+         pubID: dfp_ad_object[0]["header_bidding_amazon_publisher_id"],
+         adServer: "googletag",
+         simplerGPT: true
+    });
+    window.dfp_ready_states["amazon"] = false;
+    window.header_bidding_amazon_params["timeout"] = parseInt(dfp_ad_object[0]["header_bidding_amazon_timeout"]);
+    googletag.cmd.push(function(){
+        dfpDebug("Amazon requesting bids.");
+        var thisVpWidth = window.innerWidth;
+        for (slot of header_bidding_amazon_params["slots"]) {
+            if ("sizes" in slot) {
+                var filteredSizes = slot["sizes"].filter(function(value, index, arr){
+                    return (arr[index][0] < thisVpWidth);
+                });
+                slot["sizes"] = filteredSizes;
+            }
+        }
+        var filteredSlots = header_bidding_amazon_params["slots"].filter(function(value, index, arr){
+            return (arr[index]["sizes"].length > 0);
+        });
+        header_bidding_amazon_params["slots"] = filteredSlots;
+
+        apstag.fetchBids(window.header_bidding_amazon_params, amazonSendAdTargeting );
+    } );
+    setTimeout(amazonTimeout, window.header_bidding_amazon_params["timeout"]);
+  }
+
+
+   function prebidSendAdTargeting() {
+       if (pbjs.adserverRequestSent) {
+           dfpDebug("Already sent ad server request; returning");
+           return;
+       }
+       dfpDebug("Prebid bids returned.");
+       googletag.cmd.push(function() {
+           pbjs.que.push(function() {
+                 pbjs.setTargetingForGPTAsync();
+                 pbjs.adserverRequestSent = true;
+                 window.dfp_ready_states["prebid"] = true;
+                 dfpDebug("Prebid ready.");
+           });
+       });
+   }
+   function prebidTimeout() {
+       if (pbjs.adserverRequestSent) {
+         dfpDebug("Ad server request already sent; returning");
+         return;
+       }
+       dfpDebug("Prebid failure, proceeding.");
+       prebidSendAdTargeting();
+   }
+
+  function prebidPrepare() {
+    window.dfp_ready_states["prebid"] = false;
+    PREBID_TIMEOUT = parseInt(dfp_ad_object[0]["header_bidding_prebid_timeout"]);
+    pbjs.que.push(function() {
+        window.dfp_prebid_major_version = pbjs.version.substr(1,1);
+        if (dfp_prebid_major_version > 0) {
+            dfpDebug("Prebid 1.x+ requesting bids.");
+            var config = {
+                bidderTimeout: PREBID_TIMEOUT - 50,
+                priceGranularity: "' . $prebid_price_granularity . '",
+                bidderOrder: "' . $prebid_bidder_order . '",
+                publisherDomain: "' . $prebid_publisher_domain . '",
+                debug: window.dfpAdsDebug,
+                sizeMapping: window.header_bidding_prebid_size_config
+            };
+            pbjs.setConfig(config);
+            pbjs.addAdUnits(header_bidding_prebid_1x_params);
+            pbjs.requestBids({
+                 bidsBackHandler: prebidSendAdTargeting
+            });
+        } else {
+            dfpDebug("Prebid 0.x requesting bids.");
+            pbjs.setPriceGranularity("dense");
+            pbjs.addAdUnits(header_bidding_prebid_params);
+            pbjs.requestBids({
+                 bidsBackHandler: prebidSendAdTargeting
+            });
+
+        }
+     });
+
+     setTimeout(prebidTimeout, PREBID_TIMEOUT);
+  }
+
+
   // Targeting
 
   if (hasClass(document.getElementsByTagName("body")[0], "home")) {
@@ -386,12 +515,25 @@ googletag.cmd.push(function() {
 
   // Asynchronous Loading
   if (dfp_ad_data.asynch === true) {
+    dfpDebug("Enabling async loading.");
     googletag.pubads().enableAsyncRendering();
   }
+
+  // Lazy Loading
+  if (dfp_ad_data.lazy_load === true) {
+    dfpDebug("Enabling lazy load.");
+    googletag.pubads().enableLazyLoad();
+  } else {
+    dfpDebug("Not enabling lazy load.");
+  }
+
   // Enable Single Request
   googletag.pubads().enableSingleRequest();
-  // Go
+
+  // Center Ads
   googletag.pubads().setCentering(true);
+
+  // Go
   googletag.enableServices();
 
   jQuery(document).ready(function() {
@@ -401,6 +543,20 @@ googletag.cmd.push(function() {
     window.dfp_ready_states = window.dfp_ready_states || {};
     dfpDebug("GPT ready.");
     window.dfp_ready_states["gpt"] = true;
+
+    if (window.header_bidding_amazon_params && header_bidding_amazon_enabled()) {
+        amazonPrepare();
+    } else {
+        dfpDebug("Amazon: No header_bidding_amazon_params.");
+    }
+
+    var pbjs = pbjs || {};
+    pbjs.que = pbjs.que || [];
+    if (window.header_bidding_prebid_params) {
+        prebidPrepare();
+    } else {
+        dfpDebug("Prebid: No header_bidding_prebid_params.");
+    }
 
     dfpDebug("Header bidding through Prebid enabled: " + header_bidding_prebid_enabled());
     dfpDebug("Header bidding through Amazon enabled: " + header_bidding_amazon_enabled());
@@ -412,3 +568,4 @@ googletag.cmd.push(function() {
   });
 
 });
+

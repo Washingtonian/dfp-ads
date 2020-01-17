@@ -68,11 +68,13 @@ $dfp_ads->dir_uri = plugins_url(null, __FILE__);
 $dfp_ads->set_account_id(dfp_get_settings_value('dfp_property_code'));
 $dfp_ads->set_asynchronous_loading(dfp_get_settings_value('dfp_synchronous_tags'));
 $dfp_ads->set_console_debugging(dfp_get_settings_value('dfp_console_debugging'));
+$dfp_ads->set_lazy_load(dfp_get_settings_value('dfp_lazy_load'));
 $dfp_ads->set_header_bidding_prebid(dfp_get_settings_value('dfp_header_bidding_prebid_enabled'));
 $dfp_ads->set_header_bidding_prebid_timeout(dfp_get_settings_value('dfp_header_bidding_prebid_timeout'));
 $dfp_ads->set_header_bidding_prebid_publisher_domain(dfp_get_settings_value('dfp_header_bidding_prebid_publisher_domain'));
 $dfp_ads->set_header_bidding_prebid_bidder_order_fixed(dfp_get_settings_value('dfp_header_bidding_prebid_bidder_order_fixed'));
 $dfp_ads->set_header_bidding_prebid_price_granularity(dfp_get_settings_value('dfp_header_bidding_prebid_price_granularity'));
+$dfp_ads->set_header_bidding_prebid_size_config(dfp_get_settings_value('dfp_header_bidding_prebid_size_config'));
 $dfp_ads->set_header_bidding_amazon(dfp_get_settings_value('dfp_header_bidding_amazon_enabled'));
 $dfp_ads->set_header_bidding_amazon_publisher_id(dfp_get_settings_value('dfp_header_bidding_amazon_publisher_id'));
 $dfp_ads->set_header_bidding_amazon_timeout(dfp_get_settings_value('dfp_header_bidding_amazon_timeout'));
@@ -206,6 +208,14 @@ if (is_admin()) {
 			'section'     => 'general_settings',
 			'description' => '<em>Show detailed debugging information in the JavaScript console for all visitors.</em>',
 		];
+		$fields['dfp_lazy_load'] = [
+			'id'          => 'dfp_lazy_load',
+			'field'       => 'checkbox',
+			'callback'    => 'checkbox',
+			'title'       => 'Use Lazy Load',
+			'section'     => 'general_settings',
+			'description' => "<em>Don't load ads until they approach the viewport.</em>",
+		];
 		$fields['dfp_header_bidding_prebid_enabled'] = [
 			'id'          => 'dfp_header_bidding_prebid_enabled',
 			'field'       => 'checkbox',
@@ -245,6 +255,14 @@ if (is_admin()) {
 			'title'       => 'Price Granularity',
 			'section'     => 'header_bidding_prebid',
 			'description' => 'Enter one of these: low, med, high, dense, auto. Needs to match the line items you created in DFP.',
+		];
+		$fields['dfp_header_bidding_prebid_size_config']    = [
+			'id'          => 'dfp_header_bidding_prebid_size_config',
+			'field'       => 'textarea',
+			'callback'    => 'textarea',
+			'title'       => 'Prebid 1.x+ Sizes Configuration',
+			'section'     => 'header_bidding_prebid',
+			'description' => 'Paste in a JSON size config <a href="http://prebid.org/dev-docs/prebid-1.0-API.html#size-mapping-changes" target="_blank">like the one here.</a>',
 		];
 		$fields['dfp_header_bidding_amazon_enabled'] = [
 			'id'          => 'dfp_header_bidding_amazon_enabled',

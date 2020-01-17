@@ -49,9 +49,19 @@ Class DFP_Ads
      *
      * @since  0.3.1
      * @access public
-     * @var bool $account_id
+     * @var bool $asynch
      */
     public $asynch;
+
+    /**
+     * Setting for whether to debug to console
+     *
+     * @since  0.0.1
+     * @access public
+     *
+     * @var string $console_debugging
+     */
+    public $console_debugging;
 
     /**
      * Stores the URI of the directory
@@ -70,7 +80,13 @@ Class DFP_Ads
      * @access public
      * @var bool $header_bidding_prebid_enabled
      */
+
+    public $header_bidding_prebid_bidder_order_fixed;
     public $header_bidding_prebid_enabled;
+    public $header_bidding_prebid_price_granularity;
+    public $header_bidding_prebid_publisher_domain;
+    public $header_bidding_prebid_size_config;
+    public $header_bidding_prebid_timeout;
 
     /**
      * Setting for whether header bidding is enabled thru Amazon UAM
@@ -80,6 +96,17 @@ Class DFP_Ads
      * @var bool $header_bidding_amazon_enabled
      */
     public $header_bidding_amazon_enabled;
+    public $header_bidding_amazon_timeout;
+
+    /**
+     * Setting for whether to load an ad as it nears viewport
+     *
+     * @since  0.0.1
+     * @access public
+     *
+     * @var string $lazy_load
+     */
+    public $lazy_load;
 
     /**
      * Ad Positions - Array
@@ -320,6 +347,57 @@ Class DFP_Ads
     }
 
     /**
+     * Set Header Bidding Size Configs (prebid.js)
+     *
+     * By default, the setting is "dense"
+     *
+     * @since  0.3.1
+     * @access public
+     *
+     * @param string $val
+     *
+     * @return bool
+     */
+    public function set_header_bidding_prebid_size_config($val)
+    {
+        $this->header_bidding_prebid_size_config = (json_decode($val) ? json_decode($val) :
+        [ [
+            'mediaQuery' => '(min-width: 480px, max-width: 767px)',
+            'sizesSupported'=> [
+              [320, 50],
+              [300, 250]
+            ],
+            'labels'=> ['xs']
+        ],
+        [
+            'mediaQuery'=> '(min-width: 768px, max-width: 991px)',
+            'sizesSupported'=> [
+            [320, 50],
+            [300, 250]
+            ],
+            'labels'=> ['sm']
+        ],
+        [
+            'mediaQuery'=> '(min-width: 992px, max-width: 1199px)',
+            'sizesSupported'=> [
+              [320, 50],
+              [300, 250]
+            ],
+            'labels' => ['md']
+        ],
+        [
+            'mediaQuery'=> '(min-width: 1200px)',
+            'sizesSupported' => [
+            [320, 50],
+            [300, 250]
+            ],
+            'labels'=> ['lg']
+        ]  ]  );
+
+        return ($this->header_bidding_prebid_size_config);
+    }
+
+    /**
      * Set Header Bidding (Amazon)
      *
      * By default, the setting is off
@@ -357,6 +435,24 @@ Class DFP_Ads
         return (isset($this->console_debugging) ? $this->console_debugging : false);
     }
 
+
+    /**
+     * Set Lazy Load
+     *
+     * By default, the setting is off
+     *
+     * @since  0.3.1
+     * @access public
+     *
+     * @param string $val
+     *
+     * @return bool
+     */
+    public function set_lazy_load($val)
+    {
+        $this->lazy_load = ($val == 'on' ? true : false);
+        return (isset($this->lazy_load) ? $this->lazy_load : false);
+    }
 
 
     /**
@@ -836,7 +932,7 @@ Class DFP_Ads
         $header_bidding_amazon_params = apply_filters('pre_dfp_header_bidding_amazon_to_js', $this);
 
         // Add mandatory DFP inline scripts
-        add_action('wp_head', 'inline_dfp_header_scripts', 100);
+        add_action('wp_head', 'inline_dfp_header_scripts', 10);
         add_action('wp_footer', 'inline_dfp_footer_scripts', 100);
 
         // Preps the script
@@ -846,9 +942,7 @@ Class DFP_Ads
         wp_localize_script($this->script_name, 'dfp_ad_object', [$ad_positions]);
         wp_localize_script($this->script_name, 'header_bidding_prebid_params', $header_bidding_prebid_params);
         wp_localize_script($this->script_name, 'header_bidding_prebid_1x_params', $header_bidding_prebid_1x_params);
-        wp_localize_script($this->script_name, 'header_bidding_prebid_enabled', [$this->header_bidding_prebid_enabled]);
         wp_localize_script($this->script_name, 'header_bidding_amazon_params', $header_bidding_amazon_params);
-        wp_localize_script($this->script_name, 'header_bidding_amazon_enabled', [$this->header_bidding_amazon_enabled]);
         wp_localize_script($this->script_name, 'browser_sizes', $this->browser_sizes);
         wp_localize_script($this->script_name, 'alternate_sizes', $this->alternate_sizes);
 
