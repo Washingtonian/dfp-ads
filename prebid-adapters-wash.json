@@ -1,14 +1,13 @@
 [
-    "adbladeBidAdapter",
     "aolBidAdapter",
     "appnexusBidAdapter",
     "conversantBidAdapter",
     "pulsepointBidAdapter",
     "rhythmoneBidAdapter",
     "sovrnBidAdapter",
-    "yieldbotBidAdapter",
     "underdogmediaBidAdapter",
     "jcmBidAdapter",
     "lockerdomeBidAdapter",
-    "undertoneBidAdapter"
+    "undertoneBidAdapter",
+    "vidazooBidAdapter"
 ]
